@@ -1,0 +1,4 @@
+# esbuild (used by tsup and vitest) ships a prebuilt binary and its install
+# script only verifies it. Allow it to run so pnpm install exits clean in CI.
+allowBuilds:
+  esbuild: true
