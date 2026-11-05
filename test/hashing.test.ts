@@ -5,6 +5,8 @@ import {
   hashDeliveryProof,
   hashDisputeReason,
   verifyTerms,
+  verifyDeliveryProof,
+  verifyDisputeReason,
   DOMAIN,
 } from "../src/index.js";
 
@@ -45,6 +47,21 @@ describe("canonicalize", () => {
       '{"a":null,"b":true,"c":false}',
     );
   });
+
+  it("handles empty structures and negative numbers", () => {
+    expect(canonicalize({})).toBe("{}");
+    expect(canonicalize([])).toBe("[]");
+    expect(canonicalize({ emptyObj: {}, emptyArr: [] })).toBe(
+      '{"emptyArr":[],"emptyObj":{}}',
+    );
+    expect(canonicalize({ neg: -42, zero: 0 })).toBe('{"neg":-42,"zero":0}');
+  });
+
+  it("handles escaped string characters and symbols", () => {
+    expect(canonicalize({ text: "line 1\nline 2\t\"quoted\"" })).toBe(
+      '{"text":"line 1\\nline 2\\t\\"quoted\\""}',
+    );
+  });
 });
 
 describe("document hashing", () => {
@@ -74,6 +91,18 @@ describe("document hashing", () => {
     expect(verifyTerms(terms, h)).toBe(true);
     expect(verifyTerms(terms, h.toString("hex"))).toBe(true);
     expect(verifyTerms({ work: "y" }, h)).toBe(false);
+
+    const proof = { url: "https://example.com/delivery" };
+    const proofHash = hashDeliveryProof(proof);
+    expect(verifyDeliveryProof(proof, proofHash)).toBe(true);
+    expect(verifyDeliveryProof(proof, proofHash.toString("hex"))).toBe(true);
+    expect(verifyDeliveryProof({ url: "https://example.com/other" }, proofHash)).toBe(false);
+
+    const reason = { note: "work not delivered as promised" };
+    const reasonHash = hashDisputeReason(reason);
+    expect(verifyDisputeReason(reason, reasonHash)).toBe(true);
+    expect(verifyDisputeReason(reason, reasonHash.toString("hex"))).toBe(true);
+    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(false);
   });
 
   it("exposes versioned domain separators", () => {
