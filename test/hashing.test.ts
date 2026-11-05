@@ -5,6 +5,8 @@ import {
   hashDeliveryProof,
   hashDisputeReason,
   verifyTerms,
+  verifyDeliveryProof,
+  verifyDisputeReason,
   DOMAIN,
 } from "../src/index.js";
 
@@ -74,6 +76,18 @@ describe("document hashing", () => {
     expect(verifyTerms(terms, h)).toBe(true);
     expect(verifyTerms(terms, h.toString("hex"))).toBe(true);
     expect(verifyTerms({ work: "y" }, h)).toBe(false);
+
+    const proof = { url: "https://example.com/delivery" };
+    const proofHash = hashDeliveryProof(proof);
+    expect(verifyDeliveryProof(proof, proofHash)).toBe(true);
+    expect(verifyDeliveryProof(proof, proofHash.toString("hex"))).toBe(true);
+    expect(verifyDeliveryProof({ url: "https://example.com/other" }, proofHash)).toBe(false);
+
+    const reason = { note: "work not delivered as promised" };
+    const reasonHash = hashDisputeReason(reason);
+    expect(verifyDisputeReason(reason, reasonHash)).toBe(true);
+    expect(verifyDisputeReason(reason, reasonHash.toString("hex"))).toBe(true);
+    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(false);
   });
 
   it("exposes versioned domain separators", () => {
