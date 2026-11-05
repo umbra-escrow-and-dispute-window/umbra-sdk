@@ -10,7 +10,8 @@ describe("deployments export", () => {
     expect(typeof deployments.deployedAt).toBe("string");
     expect(typeof deployments.commit).toBe("string");
     expect(typeof deployments.contracts.escrow).toBe("string");
-    expect(deployments.contracts.escrow.startsWith("C")).toBe(true);
+    expect(deployments.contracts.escrow).toBeDefined();
+    expect(deployments.contracts.escrow?.startsWith("C")).toBe(true);
   });
 
   it("exports valid rpc url mappings", () => {
