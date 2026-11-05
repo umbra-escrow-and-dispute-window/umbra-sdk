@@ -16,7 +16,9 @@ describe("Umbra construction", () => {
 
   it("accepts custom rpcUrl with HTTP and HTTPS", () => {
     const httpsUmbra = new Umbra({ rpcUrl: "https://custom-rpc.stellar.org" });
-    expect(httpsUmbra.client.options.rpcUrl).toBe("https://custom-rpc.stellar.org");
+    expect(httpsUmbra.client.options.rpcUrl).toBe(
+      "https://custom-rpc.stellar.org",
+    );
     expect(httpsUmbra.client.options.allowHttp).toBe(false);
 
     const httpUmbra = new Umbra({ rpcUrl: "http://localhost:8000" });

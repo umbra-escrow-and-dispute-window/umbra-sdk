@@ -19,7 +19,12 @@ export {
   type JsonValue,
 } from "./hashing.js";
 
-export { deployments, rpcUrls, type Deployment, type NetworkName } from "./deployments.js";
+export {
+  deployments,
+  rpcUrls,
+  type Deployment,
+  type NetworkName,
+} from "./deployments.js";
 
 // Re-export the generated contract types so consumers have one import surface.
 export {

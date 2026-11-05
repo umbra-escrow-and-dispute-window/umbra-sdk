@@ -101,7 +101,9 @@ export class Umbra {
    * public key is the buyer. Returns the new escrow id. */
   async hire(params: HireParams): Promise<{ escrowId: u64 }> {
     if (!this.client.options.publicKey) {
-      throw new Error("hire requires a signer: set publicKey and signTransaction");
+      throw new Error(
+        "hire requires a signer: set publicKey and signTransaction",
+      );
     }
     const terms_hash = hashTerms(params.terms);
 
@@ -155,7 +157,10 @@ export class Umbra {
     escrowId: u64,
     proofHash: Buffer,
   ): Promise<AssembledTransaction<Result<void>>> {
-    return this.client.mark_delivered({ escrow_id: escrowId, proof_hash: proofHash });
+    return this.client.mark_delivered({
+      escrow_id: escrowId,
+      proof_hash: proofHash,
+    });
   }
   confirm(escrowId: u64): Promise<AssembledTransaction<Result<void>>> {
     return this.client.confirm({ escrow_id: escrowId });
@@ -167,7 +172,10 @@ export class Umbra {
     escrowId: u64,
     reasonHash: Buffer,
   ): Promise<AssembledTransaction<Result<void>>> {
-    return this.client.dispute({ escrow_id: escrowId, reason_hash: reasonHash });
+    return this.client.dispute({
+      escrow_id: escrowId,
+      reason_hash: reasonHash,
+    });
   }
   resolve(
     escrowId: u64,
@@ -180,7 +188,10 @@ export class Umbra {
       signature: signature ?? undefined,
     });
   }
-  cancel(escrowId: u64, caller: string): Promise<AssembledTransaction<Result<void>>> {
+  cancel(
+    escrowId: u64,
+    caller: string,
+  ): Promise<AssembledTransaction<Result<void>>> {
     return this.client.cancel({ escrow_id: escrowId, caller });
   }
 }

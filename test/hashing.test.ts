@@ -58,7 +58,7 @@ describe("canonicalize", () => {
   });
 
   it("handles escaped string characters and symbols", () => {
-    expect(canonicalize({ text: "line 1\nline 2\t\"quoted\"" })).toBe(
+    expect(canonicalize({ text: 'line 1\nline 2\t"quoted"' })).toBe(
       '{"text":"line 1\\nline 2\\t\\"quoted\\""}',
     );
   });
@@ -96,13 +96,17 @@ describe("document hashing", () => {
     const proofHash = hashDeliveryProof(proof);
     expect(verifyDeliveryProof(proof, proofHash)).toBe(true);
     expect(verifyDeliveryProof(proof, proofHash.toString("hex"))).toBe(true);
-    expect(verifyDeliveryProof({ url: "https://example.com/other" }, proofHash)).toBe(false);
+    expect(
+      verifyDeliveryProof({ url: "https://example.com/other" }, proofHash),
+    ).toBe(false);
 
     const reason = { note: "work not delivered as promised" };
     const reasonHash = hashDisputeReason(reason);
     expect(verifyDisputeReason(reason, reasonHash)).toBe(true);
     expect(verifyDisputeReason(reason, reasonHash.toString("hex"))).toBe(true);
-    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(false);
+    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(
+      false,
+    );
   });
 
   it("exposes versioned domain separators", () => {

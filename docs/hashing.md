@@ -56,8 +56,12 @@ handles `i128` amounts.
 
 ```ts
 import {
-  hashTerms, hashDeliveryProof, hashDisputeReason,
-  verifyTerms, verifyDeliveryProof, verifyDisputeReason,
+  hashTerms,
+  hashDeliveryProof,
+  hashDisputeReason,
+  verifyTerms,
+  verifyDeliveryProof,
+  verifyDisputeReason,
   canonicalize,
 } from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
