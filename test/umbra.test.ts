@@ -14,6 +14,28 @@ describe("Umbra construction", () => {
     expect(u.contractId).toBe(id);
   });
 
+  it("accepts custom rpcUrl with HTTP and HTTPS", () => {
+    const httpsUmbra = new Umbra({ rpcUrl: "https://custom-rpc.stellar.org" });
+    expect(httpsUmbra.client.options.rpcUrl).toBe("https://custom-rpc.stellar.org");
+    expect(httpsUmbra.client.options.allowHttp).toBe(false);
+
+    const httpUmbra = new Umbra({ rpcUrl: "http://localhost:8000" });
+    expect(httpUmbra.client.options.rpcUrl).toBe("http://localhost:8000");
+    expect(httpUmbra.client.options.allowHttp).toBe(true);
+  });
+
+  it("passes publicKey and signTransaction to the client", () => {
+    const mockSigner = async (xdr: string) => ({ signedTxXdr: xdr });
+    const u = new Umbra({
+      publicKey: "GBUYER1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      signTransaction: mockSigner,
+    });
+    expect(u.client.options.publicKey).toBe(
+      "GBUYER1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    );
+    expect(u.client.options.signTransaction).toBe(mockSigner);
+  });
+
   it("hire refuses to run without a signer", async () => {
     const u = new Umbra();
     await expect(
