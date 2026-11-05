@@ -56,8 +56,12 @@ handles `i128` amounts.
 
 ```ts
 import {
-  hashTerms, hashDeliveryProof, hashDisputeReason,
-  verifyTerms, verifyDeliveryProof, verifyDisputeReason,
+  hashTerms,
+  hashDeliveryProof,
+  hashDisputeReason,
+  verifyTerms,
+  verifyDeliveryProof,
+  verifyDisputeReason,
   canonicalize,
 } from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
@@ -79,7 +83,7 @@ edited by hand. To regenerate after a contract change and redeploy:
 ```bash
 stellar contract bindings typescript \
   --network testnet \
-  --contract-id "$(node -e "console.log(require('./deployments/testnet.json').contracts.escrow)")" \
+  --contract-id "$(node --input-type=module -e "import d from './deployments/testnet.json' with { type: 'json' }; console.log(d.contracts.escrow);")" \
   --output-dir /tmp/umbra-bindings --overwrite
 cp /tmp/umbra-bindings/src/index.ts src/generated/index.ts
 ```

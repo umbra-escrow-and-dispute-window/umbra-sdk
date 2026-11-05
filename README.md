@@ -27,8 +27,8 @@ but the contract returns `Unimplemented` at resolve time.
 ## Compatibility
 
 | SDK version | Protocol version | Testnet | Mainnet |
-|---|---|---|---|
-| 0.1.x | v0.1.0 | yes | no |
+| ----------- | ---------------- | ------- | ------- |
+| 0.1.x       | v0.1.0           | yes     | no      |
 
 This table is the source of truth for compatibility and is updated in the same
 pull request that changes it.
@@ -49,20 +49,26 @@ consumer hardcodes it.
 ```ts
 import { Keypair } from "@stellar/stellar-sdk";
 import { basicNodeSigner } from "@stellar/stellar-sdk/contract";
-import { Umbra, arbiter, verdict, deployments } from "@umbra-escrow-and-dispute-window/umbra-sdk";
+import {
+  Umbra,
+  arbiter,
+  verdict,
+  deployments,
+} from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
 const buyer = Keypair.fromSecret(process.env.STELLAR_SECRET!);
 const umbra = new Umbra({
   publicKey: buyer.publicKey(),
-  signTransaction: basicNodeSigner(buyer, deployments.networkPassphrase).signTransaction,
+  signTransaction: basicNodeSigner(buyer, deployments.networkPassphrase)
+    .signTransaction,
 });
 
 // Create and fund an escrow in one call. The terms are hashed; only the hash
 // goes on chain.
 const { escrowId } = await umbra.hire({
   seller: "G...SELLER",
-  asset: "C...ASSET",       // e.g. native XLM wrapped as a Stellar Asset Contract
-  amount: 500_000_000n,     // stroops
+  asset: "C...ASSET", // e.g. native XLM wrapped as a Stellar Asset Contract
+  amount: 500_000_000n, // stroops
   deliverBy: 9_999_999_999n,
   confirmWindow: 86_400n,
   disputeWindow: 86_400n,

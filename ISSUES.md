@@ -8,6 +8,7 @@ hardest, with acceptance criteria and a difficulty label (`good first issue`,
 ---
 
 ## 1. Retry and backoff for RPC reads
+
 Label: good first issue
 
 `getEscrow` and `waitForState` issue plain RPC calls. Testnet rate-limits and
@@ -19,6 +20,7 @@ and off by default for a single call; unit tests with a mocked transport; no new
 runtime dependency.
 
 ## 2. Typed event decoding
+
 Label: good first issue
 
 The contract emits one `Transition` event per state change with topics
@@ -29,6 +31,7 @@ typed against the `State` enum, plus a helper to filter a page of RPC events for
 one escrow; unit tests over captured event XDR.
 
 ## 3. Hashing conformance vectors shared with the contract
+
 Label: intermediate
 
 `docs/hashing.md` defines canonicalisation, but there is no fixture set both this
@@ -39,6 +42,7 @@ hashes, exercised here and referenced from the contract repository, covering key
 order, unicode NFC, nested structures, and the string-amount convention.
 
 ## 4. Browser wallet signer adapter
+
 Label: intermediate
 
 `hire` and the send helpers take a `signTransaction` in the Stellar SDK's shape.
@@ -50,6 +54,7 @@ Acceptance: an adapter that turns a Stellar Wallets Kit signer into the SDK's
 wallet library.
 
 ## 5. Fee and resource estimation helpers
+
 Label: intermediate
 
 Callers currently rely on the default simulation. A helper to surface the
@@ -61,6 +66,7 @@ Acceptance: a helper returning the estimated fee and footprint from an
 transaction.
 
 ## 6. Publish to a public registry with provenance
+
 Label: intermediate
 
 The prerelease is distributed as a tarball attached to a GitHub release and,
@@ -72,6 +78,7 @@ into CI on tag, with provenance where the registry supports it, and an install
 line in the README that matches.
 
 ## 7. Panel arbitration client support
+
 Label: advanced
 
 Depends on the contract implementing `ArbiterConfig::Panel` (contracts issue 7).
@@ -83,6 +90,7 @@ that collects and submits the required member signatures; unit tests for the
 below-threshold and duplicate-signer rejections mirroring the contract's.
 
 ## 8. Signed adjudicator verdicts
+
 Label: advanced
 
 Depends on the contract implementing `ArbiterConfig::Signed` (contracts issue 8).

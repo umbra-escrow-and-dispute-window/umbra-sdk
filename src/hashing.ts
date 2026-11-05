@@ -20,12 +20,7 @@ export const DOMAIN = {
 } as const;
 
 export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 /**
  * Deterministic JSON. Object keys are sorted, strings are Unicode-normalised to

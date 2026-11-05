@@ -13,7 +13,9 @@ const secret = process.env.STELLAR_SECRET;
 describe.skipIf(!secret)("Testnet dispute cycle", () => {
   it("hires, delivers, disputes, and resolves as a refund", async () => {
     const buyer = Keypair.fromSecret(secret!);
-    const arbiterKp = Keypair.fromSecret(process.env.STELLAR_ARBITER ?? secret!);
+    const arbiterKp = Keypair.fromSecret(
+      process.env.STELLAR_ARBITER ?? secret!,
+    );
     const seller = process.env.STELLAR_SELLER!;
     const asset = process.env.STELLAR_ASSET!;
 

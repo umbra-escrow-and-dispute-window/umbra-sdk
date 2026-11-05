@@ -1,12 +1,12 @@
 import type {
   AssembledTransaction,
   i128,
+  Result,
   u32,
   u64,
 } from "@stellar/stellar-sdk/contract";
 import {
   Client,
-  networks,
   State,
   type ArbiterConfig,
   type Escrow,
@@ -83,7 +83,7 @@ export class Umbra {
 
     this.client = new Client({
       contractId: this.contractId,
-      networkPassphrase: networks.testnet.networkPassphrase,
+      networkPassphrase: this.networkPassphrase,
       rpcUrl,
       allowHttp: rpcUrl.startsWith("http://"),
       publicKey: options.publicKey,
@@ -101,7 +101,9 @@ export class Umbra {
    * public key is the buyer. Returns the new escrow id. */
   async hire(params: HireParams): Promise<{ escrowId: u64 }> {
     if (!this.client.options.publicKey) {
-      throw new Error("hire requires a signer: set publicKey and signTransaction");
+      throw new Error(
+        "hire requires a signer: set publicKey and signTransaction",
+      );
     }
     const terms_hash = hashTerms(params.terms);
 
@@ -148,33 +150,48 @@ export class Umbra {
   // One method per contract call. Each returns an AssembledTransaction; call
   // `.signAndSend()` to submit a state change, or read `.result` for a query.
 
-  fund(escrowId: u64): Promise<AssembledTransaction<any>> {
+  fund(escrowId: u64): Promise<AssembledTransaction<Result<void>>> {
     return this.client.fund({ escrow_id: escrowId });
   }
-  markDelivered(escrowId: u64, proofHash: Buffer): Promise<AssembledTransaction<any>> {
-    return this.client.mark_delivered({ escrow_id: escrowId, proof_hash: proofHash });
+  markDelivered(
+    escrowId: u64,
+    proofHash: Buffer,
+  ): Promise<AssembledTransaction<Result<void>>> {
+    return this.client.mark_delivered({
+      escrow_id: escrowId,
+      proof_hash: proofHash,
+    });
   }
-  confirm(escrowId: u64): Promise<AssembledTransaction<any>> {
+  confirm(escrowId: u64): Promise<AssembledTransaction<Result<void>>> {
     return this.client.confirm({ escrow_id: escrowId });
   }
-  claimTimeout(escrowId: u64): Promise<AssembledTransaction<any>> {
+  claimTimeout(escrowId: u64): Promise<AssembledTransaction<Result<void>>> {
     return this.client.claim_timeout({ escrow_id: escrowId });
   }
-  dispute(escrowId: u64, reasonHash: Buffer): Promise<AssembledTransaction<any>> {
-    return this.client.dispute({ escrow_id: escrowId, reason_hash: reasonHash });
+  dispute(
+    escrowId: u64,
+    reasonHash: Buffer,
+  ): Promise<AssembledTransaction<Result<void>>> {
+    return this.client.dispute({
+      escrow_id: escrowId,
+      reason_hash: reasonHash,
+    });
   }
   resolve(
     escrowId: u64,
     v: Verdict,
     signature?: Buffer,
-  ): Promise<AssembledTransaction<any>> {
+  ): Promise<AssembledTransaction<Result<void>>> {
     return this.client.resolve({
       escrow_id: escrowId,
       verdict: v,
       signature: signature ?? undefined,
     });
   }
-  cancel(escrowId: u64, caller: string): Promise<AssembledTransaction<any>> {
+  cancel(
+    escrowId: u64,
+    caller: string,
+  ): Promise<AssembledTransaction<Result<void>>> {
     return this.client.cancel({ escrow_id: escrowId, caller });
   }
 }

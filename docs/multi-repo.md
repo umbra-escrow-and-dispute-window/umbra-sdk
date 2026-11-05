@@ -53,8 +53,8 @@ A redeployment is therefore a three-step release: deploy from the protocol repos
 Every SDK README carries this table and it must be updated in the same pull request that changes compatibility:
 
 | SDK version | Protocol version | Testnet | Mainnet |
-|---|---|---|---|
-| 0.2.x | v0.3.0 | yes | no |
+| ----------- | ---------------- | ------- | ------- |
+| 0.2.x       | v0.3.0           | yes     | no      |
 
 ## 4. Landing a change that spans repositories
 

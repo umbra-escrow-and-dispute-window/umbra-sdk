@@ -35,6 +35,7 @@ describe("canonicalize", () => {
   it("formats integers without a decimal point", () => {
     expect(canonicalize({ n: 1 })).toBe('{"n":1}');
     expect(canonicalize({ n: 1000000 })).toBe('{"n":1000000}');
+    expect(canonicalize({ frac: 0.125 })).toBe('{"frac":0.125}');
   });
 
   it("rejects non-finite numbers", () => {
@@ -58,7 +59,7 @@ describe("canonicalize", () => {
   });
 
   it("handles escaped string characters and symbols", () => {
-    expect(canonicalize({ text: "line 1\nline 2\t\"quoted\"" })).toBe(
+    expect(canonicalize({ text: 'line 1\nline 2\t"quoted"' })).toBe(
       '{"text":"line 1\\nline 2\\t\\"quoted\\""}',
     );
   });
@@ -89,20 +90,27 @@ describe("document hashing", () => {
     const terms = { work: "x", price: "10" };
     const h = hashTerms(terms);
     expect(verifyTerms(terms, h)).toBe(true);
+    expect(verifyTerms(terms, new Uint8Array(h))).toBe(true);
     expect(verifyTerms(terms, h.toString("hex"))).toBe(true);
     expect(verifyTerms({ work: "y" }, h)).toBe(false);
+    expect(verifyTerms(terms, Buffer.alloc(16))).toBe(false);
+    expect(verifyTerms(terms, "abcd")).toBe(false);
 
     const proof = { url: "https://example.com/delivery" };
     const proofHash = hashDeliveryProof(proof);
     expect(verifyDeliveryProof(proof, proofHash)).toBe(true);
     expect(verifyDeliveryProof(proof, proofHash.toString("hex"))).toBe(true);
-    expect(verifyDeliveryProof({ url: "https://example.com/other" }, proofHash)).toBe(false);
+    expect(
+      verifyDeliveryProof({ url: "https://example.com/other" }, proofHash),
+    ).toBe(false);
 
     const reason = { note: "work not delivered as promised" };
     const reasonHash = hashDisputeReason(reason);
     expect(verifyDisputeReason(reason, reasonHash)).toBe(true);
     expect(verifyDisputeReason(reason, reasonHash.toString("hex"))).toBe(true);
-    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(false);
+    expect(verifyDisputeReason({ note: "other reason" }, reasonHash)).toBe(
+      false,
+    );
   });
 
   it("exposes versioned domain separators", () => {
