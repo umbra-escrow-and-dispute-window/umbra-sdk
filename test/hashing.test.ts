@@ -47,6 +47,21 @@ describe("canonicalize", () => {
       '{"a":null,"b":true,"c":false}',
     );
   });
+
+  it("handles empty structures and negative numbers", () => {
+    expect(canonicalize({})).toBe("{}");
+    expect(canonicalize([])).toBe("[]");
+    expect(canonicalize({ emptyObj: {}, emptyArr: [] })).toBe(
+      '{"emptyArr":[],"emptyObj":{}}',
+    );
+    expect(canonicalize({ neg: -42, zero: 0 })).toBe('{"neg":-42,"zero":0}');
+  });
+
+  it("handles escaped string characters and symbols", () => {
+    expect(canonicalize({ text: "line 1\nline 2\t\"quoted\"" })).toBe(
+      '{"text":"line 1\\nline 2\\t\\"quoted\\""}',
+    );
+  });
 });
 
 describe("document hashing", () => {
