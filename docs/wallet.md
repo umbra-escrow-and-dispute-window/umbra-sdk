@@ -11,8 +11,14 @@ The Stellar Wallets Kit and browser extension wallets typically expose an asynch
 The `createWalletSigner` adapter bridges these interfaces seamlessly:
 
 ```typescript
-import { Umbra, createWalletSigner } from "@umbra-escrow-and-dispute-window/umbra-sdk";
-import { StellarWalletsKit, WalletNetwork } from "@creit.tech/stellar-wallets-kit";
+import {
+  Umbra,
+  createWalletSigner,
+} from "@umbra-escrow-and-dispute-window/umbra-sdk";
+import {
+  StellarWalletsKit,
+  WalletNetwork,
+} from "@creit.tech/stellar-wallets-kit";
 
 // 1. Initialize your favorite browser wallet kit
 const kit = new StellarWalletsKit({
@@ -25,7 +31,7 @@ const { address } = await kit.getAddress();
 // 2. Wrap the kit signing method into an Umbra-compatible signer
 const signTransaction = createWalletSigner(
   (xdr, opts) => kit.signTransaction(xdr, opts),
-  "Test SDF Network ; September 2015"
+  "Test SDF Network ; September 2015",
 );
 
 // 3. Initialize Umbra client configured for the connected user
@@ -49,18 +55,18 @@ const tx = await client.hire({
 ### Direct Freighter Usage
 
 ```typescript
-import { Umbra, createWalletSigner } from "@umbra-escrow-and-dispute-window/umbra-sdk";
+import {
+  Umbra,
+  createWalletSigner,
+} from "@umbra-escrow-and-dispute-window/umbra-sdk";
 import freighter from "@stellar/freighter-api";
 
-const signTransaction = createWalletSigner(
-  async (xdr, opts) => {
-    const signed = await freighter.signTransaction(xdr, {
-      networkPassphrase: opts?.networkPassphrase,
-    });
-    return signed.signedTxXdr;
-  },
-  "Test SDF Network ; September 2015"
-);
+const signTransaction = createWalletSigner(async (xdr, opts) => {
+  const signed = await freighter.signTransaction(xdr, {
+    networkPassphrase: opts?.networkPassphrase,
+  });
+  return signed.signedTxXdr;
+}, "Test SDF Network ; September 2015");
 
 const client = new Umbra({
   network: "testnet",
@@ -97,12 +103,12 @@ console.log(`Write bytes: ${estimation.footprint.writeBytes}`);
 
 ### Estimation Properties
 
-| Field | Type | Description |
-|---|---|---|
-| `minFee` | `string` | Minimum network fee calculated by Soroban RPC simulation. |
-| `recommendedFee` | `string` | Recommended fee incorporating a safety buffer (default: 120% of min fee). |
-| `footprint.cpuInstructions` | `number` | Simulated Soroban virtual machine CPU instruction count. |
-| `footprint.ramBytes` | `number` | Simulated memory consumption. |
-| `footprint.readBytes` | `number` | Total ledger state bytes read during invocation. |
-| `footprint.writeBytes` | `number` | Total ledger state bytes written during invocation. |
-| `rawSimulation` | `SimulateTransactionResponse` | Full raw simulation payload from Soroban RPC for advanced inspection. |
+| Field                       | Type                          | Description                                                               |
+| --------------------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| `minFee`                    | `string`                      | Minimum network fee calculated by Soroban RPC simulation.                 |
+| `recommendedFee`            | `string`                      | Recommended fee incorporating a safety buffer (default: 120% of min fee). |
+| `footprint.cpuInstructions` | `number`                      | Simulated Soroban virtual machine CPU instruction count.                  |
+| `footprint.ramBytes`        | `number`                      | Simulated memory consumption.                                             |
+| `footprint.readBytes`       | `number`                      | Total ledger state bytes read during invocation.                          |
+| `footprint.writeBytes`      | `number`                      | Total ledger state bytes written during invocation.                       |
+| `rawSimulation`             | `SimulateTransactionResponse` | Full raw simulation payload from Soroban RPC for advanced inspection.     |

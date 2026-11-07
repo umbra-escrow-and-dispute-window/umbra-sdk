@@ -11,7 +11,7 @@ It wraps the deployed Soroban escrow contract with a strictly typed method per c
 Umbra is structured across three repositories with a strict one-way dependency flow (**protocol → SDK → application**):
 
 - **[umbra-contracts](https://github.com/umbra-escrow-and-dispute-window/umbra-contracts)** — The Rust Soroban escrow smart contract, protocol specification, and canonical deployment registry.
-- **umbra-sdk** *(this repository)* — The TypeScript client, event/error decoders, wallet adapters, and normative off-chain hashing implementation.
+- **umbra-sdk** _(this repository)_ — The TypeScript client, event/error decoders, wallet adapters, and normative off-chain hashing implementation.
 - **[umbra-app](https://github.com/umbra-escrow-and-dispute-window/umbra-app)** — The escrow explorer, dispute filing interface, and arbiter resolution console.
 
 See [`docs/multi-repo.md`](./docs/multi-repo.md) and [`docs/architecture.md`](./docs/architecture.md) for full architectural boundaries.
@@ -73,7 +73,9 @@ const { escrowId } = await umbra.hire({
   deliverBy: 9_999_999_999n,
   confirmWindow: 86_400n,
   disputeWindow: 86_400n,
-  arbiter: arbiter.single("GBUBKQXEC6J7O566GNLEBPBPIQCD3YV4FTL5M73WOBNBOHWSGAG2B5MA"),
+  arbiter: arbiter.single(
+    "GBUBKQXEC6J7O566GNLEBPBPIQCD3YV4FTL5M73WOBNBOHWSGAG2B5MA",
+  ),
   terms: { work: "translate one page", price: "50" },
 });
 
@@ -99,7 +101,10 @@ await (await umbra.resolve(escrowId, verdict.refundBuyer())).signAndSend();
 Use `createWalletSigner` to adapt any browser extension wallet or `@creit.tech/stellar-wallets-kit` instance to `Umbra`:
 
 ```ts
-import { Umbra, createWalletSigner } from "@umbra-escrow-and-dispute-window/umbra-sdk";
+import {
+  Umbra,
+  createWalletSigner,
+} from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
 const signTransaction = createWalletSigner(
   (xdr, opts) => kit.signTransaction(xdr, opts),
@@ -143,7 +148,10 @@ import {
 } from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
 const digest = hashTerms({ milestone: 1, deliverable: "audit report" });
-const isValid = verifyTerms({ deliverable: "audit report", milestone: 1 }, digest); // true
+const isValid = verifyTerms(
+  { deliverable: "audit report", milestone: 1 },
+  digest,
+); // true
 ```
 
 See [`docs/hashing.md`](./docs/hashing.md) for the full specification and [`test/vectors.json`](./test/vectors.json) for cross-language conformance vectors.
@@ -153,7 +161,10 @@ See [`docs/hashing.md`](./docs/hashing.md) for the full specification and [`test
 Decode raw Soroban RPC `Transition` events into strongly typed objects:
 
 ```ts
-import { decodeTransition, filterEscrowEvents } from "@umbra-escrow-and-dispute-window/umbra-sdk";
+import {
+  decodeTransition,
+  filterEscrowEvents,
+} from "@umbra-escrow-and-dispute-window/umbra-sdk";
 
 const transitions = filterEscrowEvents(rpcEvents, escrowId);
 for (const ev of transitions) {

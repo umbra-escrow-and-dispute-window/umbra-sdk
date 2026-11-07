@@ -25,7 +25,9 @@ describe("validation helpers", () => {
 
   it("assertValidStellarAddress succeeds on valid addresses and throws ValidationError on invalid", () => {
     expect(() => assertValidStellarAddress(validEd25519)).not.toThrow();
-    expect(() => assertValidStellarAddress(validContract, "contractId")).not.toThrow();
+    expect(() =>
+      assertValidStellarAddress(validContract, "contractId"),
+    ).not.toThrow();
 
     expect(() => assertValidStellarAddress("GINVALID", "seller")).toThrow(
       ValidationError,
@@ -43,13 +45,15 @@ describe("validation helpers", () => {
     expect(() => assertPositiveAmount(-5n, "amount")).toThrow(
       "'amount' must be greater than zero",
     );
-    expect(() => assertPositiveAmount(100 as unknown as bigint, "amount")).toThrow(
-      "'amount' must be a bigint",
-    );
+    expect(() =>
+      assertPositiveAmount(100 as unknown as bigint, "amount"),
+    ).toThrow("'amount' must be a bigint");
   });
 
   it("assertPositiveNumber validates positive finite numbers", () => {
-    expect(() => assertPositiveNumber(10, "disputeWindowLedgers")).not.toThrow();
+    expect(() =>
+      assertPositiveNumber(10, "disputeWindowLedgers"),
+    ).not.toThrow();
     expect(() => assertPositiveNumber(0.5, "ratio")).not.toThrow();
 
     expect(() => assertPositiveNumber(0, "ledgers")).toThrow(ValidationError);
@@ -59,7 +63,9 @@ describe("validation helpers", () => {
     expect(() => assertPositiveNumber(NaN, "ledgers")).toThrow(
       "'ledgers' must be a finite number",
     );
-    expect(() => assertPositiveNumber("10", "ledgers")).toThrow(ValidationError);
+    expect(() => assertPositiveNumber("10", "ledgers")).toThrow(
+      ValidationError,
+    );
   });
 
   it("assertNonEmptyString validates non-empty strings", () => {

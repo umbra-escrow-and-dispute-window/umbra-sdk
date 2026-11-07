@@ -67,11 +67,9 @@ describe("estimateTransaction helper", () => {
 
   it("throws when simulation data is missing", () => {
     expect(() =>
-      estimateTransaction(
-        { raw: { fee: "100" } } as unknown as Parameters<
-          typeof estimateTransaction
-        >[0],
-      ),
+      estimateTransaction({ raw: { fee: "100" } } as unknown as Parameters<
+        typeof estimateTransaction
+      >[0]),
     ).toThrow(/Transaction simulation data is missing/);
   });
 
