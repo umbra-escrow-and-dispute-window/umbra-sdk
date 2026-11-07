@@ -36,6 +36,17 @@ export {
   SignerRequiredError,
   StateTimeoutError,
   ContractCallError,
+  EscrowNotFoundError,
+  NotAuthorizedError,
+  InvalidStateError,
+  InvalidAmountError,
+  InvalidWindowError,
+  ArbiterRequiredError,
+  DisputeWindowClosedError,
+  ConfirmWindowOpenError,
+  InvalidVerdictError,
+  extractContractErrorCode,
+  mapContractError,
 } from "./errors.js";
 
 export { withRetry, type RetryOptions } from "./retry.js";
