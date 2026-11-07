@@ -45,6 +45,26 @@ describe("canonicalize", () => {
     expect(() => canonicalize({ n: NaN })).toThrow();
   });
 
+  it("rejects undefined, bigint, functions, and symbols with ValidationError", () => {
+    expect(() => canonicalize(undefined as unknown as JsonValue)).toThrow(
+      /cannot canonicalize undefined/,
+    );
+    expect(() => canonicalize({ val: 100n as unknown as JsonValue })).toThrow(
+      /cannot canonicalize bigint/,
+    );
+    expect(() =>
+      canonicalize({ fn: (() => {}) as unknown as JsonValue }),
+    ).toThrow(/unsupported type/);
+  });
+
+  it("verify functions return false for null, empty, or mismatched hashes", () => {
+    expect(verifyTerms({ a: 1 }, "")).toBe(false);
+    expect(
+      verifyDeliveryProof({ a: 1 }, null as unknown as string),
+    ).toBe(false);
+    expect(verifyDisputeReason({ a: 1 }, "badhex123")).toBe(false);
+  });
+
   it("handles null and booleans", () => {
     expect(canonicalize({ a: null, b: true, c: false })).toBe(
       '{"a":null,"b":true,"c":false}',
