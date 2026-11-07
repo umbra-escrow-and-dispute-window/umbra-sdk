@@ -53,6 +53,12 @@ export {
   type RawSignerFunction,
 } from "./wallet.js";
 
+export {
+  estimateTransaction,
+  type TransactionEstimation,
+  type ResourceFootprint,
+} from "./simulation.js";
+
 // Re-export the generated contract types so consumers have one import surface.
 export {
   Client as EscrowClient,
