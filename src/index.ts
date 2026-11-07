@@ -7,6 +7,11 @@ export {
   type SignTransaction,
 } from "./umbra.js";
 
+export type {
+  UmbraOptions as ClientOptions,
+  HireParams as ClientHireParams,
+} from "./types.js";
+
 export {
   canonicalize,
   hashTerms,
@@ -25,6 +30,13 @@ export {
   type Deployment,
   type NetworkName,
 } from "./deployments.js";
+
+export {
+  UmbraError,
+  SignerRequiredError,
+  StateTimeoutError,
+  ContractCallError,
+} from "./errors.js";
 
 // Re-export the generated contract types so consumers have one import surface.
 export {

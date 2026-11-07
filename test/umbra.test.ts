@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { Umbra, arbiter, verdict, deployments, State } from "../src/index.js";
+import {
+  Umbra,
+  arbiter,
+  verdict,
+  deployments,
+  State,
+  SignerRequiredError,
+  StateTimeoutError,
+} from "../src/index.js";
 
 describe("Umbra construction", () => {
   it("defaults the contract id to the vendored deployment", () => {
@@ -40,18 +48,18 @@ describe("Umbra construction", () => {
 
   it("hire refuses to run without a signer", async () => {
     const u = new Umbra();
-    await expect(
-      u.hire({
-        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
-        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
-        amount: 1000n,
-        deliverBy: 9999999999n,
-        confirmWindow: 86400n,
-        disputeWindow: 86400n,
-        arbiter: arbiter.none(),
-        terms: { work: "x" },
-      }),
-    ).rejects.toThrow(/signer/);
+    const hirePromise = u.hire({
+      seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+      asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+      amount: 1000n,
+      deliverBy: 9999999999n,
+      confirmWindow: 86400n,
+      disputeWindow: 86400n,
+      arbiter: arbiter.none(),
+      terms: { work: "x" },
+    });
+    await expect(hirePromise).rejects.toThrow(SignerRequiredError);
+    await expect(hirePromise).rejects.toThrow(/signer/);
   });
 });
 
@@ -207,13 +215,52 @@ describe("Umbra contract call delegations", () => {
     expect(polls).toBe(2);
   });
 
+  it("waitForState returns immediately if initial state matches", async () => {
+    const u = new Umbra();
+    let polls = 0;
+    u.client.get_escrow = (async () => {
+      polls++;
+      return {
+        result: {
+          ...dummyEscrow,
+          state: State.Funded,
+        },
+      };
+    }) as unknown as typeof u.client.get_escrow;
+
+    const res = await u.waitForState(42n, State.Funded, 1000, 10);
+    expect(res.state).toBe(State.Funded);
+    expect(polls).toBe(1);
+  });
+
+  it("waitForState survives transient null reads before matching state", async () => {
+    const u = new Umbra();
+    let polls = 0;
+    u.client.get_escrow = (async () => {
+      polls++;
+      if (polls === 1) return { result: null };
+      return {
+        result: {
+          ...dummyEscrow,
+          state: State.Delivered,
+        },
+      };
+    }) as unknown as typeof u.client.get_escrow;
+
+    const res = await u.waitForState(42n, State.Delivered, 1000, 10);
+    expect(res.state).toBe(State.Delivered);
+    expect(polls).toBe(2);
+  });
+
   it("waitForState times out if target state is not reached", async () => {
     const u = new Umbra();
     u.client.get_escrow = (async () => ({
       result: { ...dummyEscrow, state: State.Created },
     })) as unknown as typeof u.client.get_escrow;
 
-    await expect(u.waitForState(42n, State.Released, 50, 10)).rejects.toThrow(
+    const waitPromise = u.waitForState(42n, State.Released, 50, 10);
+    await expect(waitPromise).rejects.toThrow(StateTimeoutError);
+    await expect(waitPromise).rejects.toThrow(
       /did not reach Released within 50ms/,
     );
   });

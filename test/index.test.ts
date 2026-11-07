@@ -35,4 +35,11 @@ describe("public entrypoint exports", () => {
     expect(sdk.State).toBeDefined();
     expect(sdk.State.Created).toBe(0);
   });
+
+  it("exports typed error classes", () => {
+    expect(typeof sdk.UmbraError).toBe("function");
+    expect(typeof sdk.SignerRequiredError).toBe("function");
+    expect(typeof sdk.StateTimeoutError).toBe("function");
+    expect(typeof sdk.ContractCallError).toBe("function");
+  });
 });
