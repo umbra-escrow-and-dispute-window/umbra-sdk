@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import vectorsFixture from "./vectors.json" with { type: "json" };
 import {
   canonicalize,
   hashTerms,
@@ -131,5 +132,43 @@ describe("document hashing", () => {
     expect(DOMAIN.terms).toBe("umbra:terms:v1");
     expect(DOMAIN.deliveryProof).toBe("umbra:delivery-proof:v1");
     expect(DOMAIN.disputeReason).toBe("umbra:dispute-reason:v1");
+  });
+});
+
+describe("cross-protocol conformance vectors (test/vectors.json)", () => {
+  it("validates every test vector against canonical serialization and expected hashes", () => {
+    for (const v of vectorsFixture.vectors) {
+      expect(canonicalize(v.document)).toBe(v.canonical_json);
+
+      let computedHash: Buffer;
+      if (v.domain === DOMAIN.terms) {
+        computedHash = hashTerms(v.document);
+        expect(verifyTerms(v.document, v.expected_hash)).toBe(true);
+      } else if (v.domain === DOMAIN.deliveryProof) {
+        computedHash = hashDeliveryProof(v.document);
+        expect(verifyDeliveryProof(v.document, v.expected_hash)).toBe(true);
+      } else if (v.domain === DOMAIN.disputeReason) {
+        computedHash = hashDisputeReason(v.document);
+        expect(verifyDisputeReason(v.document, v.expected_hash)).toBe(true);
+      } else {
+        throw new Error(`Unknown domain: ${v.domain}`);
+      }
+
+      expect(computedHash.toString("hex")).toBe(v.expected_hash);
+
+      if ("alternate_document" in v) {
+        expect(canonicalize(v.alternate_document)).toBe(v.canonical_json);
+        expect(hashTerms(v.alternate_document).toString("hex")).toBe(
+          v.expected_hash,
+        );
+      }
+
+      if ("decomposed_document" in v) {
+        expect(canonicalize(v.decomposed_document)).toBe(v.canonical_json);
+        expect(hashTerms(v.decomposed_document).toString("hex")).toBe(
+          v.expected_hash,
+        );
+      }
+    }
   });
 });
