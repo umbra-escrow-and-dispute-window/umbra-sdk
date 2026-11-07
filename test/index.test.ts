@@ -36,10 +36,29 @@ describe("public entrypoint exports", () => {
     expect(sdk.State.Created).toBe(0);
   });
 
-  it("exports typed error classes", () => {
+  it("exports typed error classes and mapping helpers", () => {
     expect(typeof sdk.UmbraError).toBe("function");
     expect(typeof sdk.SignerRequiredError).toBe("function");
     expect(typeof sdk.StateTimeoutError).toBe("function");
     expect(typeof sdk.ContractCallError).toBe("function");
+    expect(typeof sdk.EscrowNotFoundError).toBe("function");
+    expect(typeof sdk.NotAuthorizedError).toBe("function");
+    expect(typeof sdk.InvalidStateError).toBe("function");
+    expect(typeof sdk.InvalidAmountError).toBe("function");
+    expect(typeof sdk.InvalidWindowError).toBe("function");
+    expect(typeof sdk.ArbiterRequiredError).toBe("function");
+    expect(typeof sdk.DisputeWindowClosedError).toBe("function");
+    expect(typeof sdk.ConfirmWindowOpenError).toBe("function");
+    expect(typeof sdk.InvalidVerdictError).toBe("function");
+    expect(typeof sdk.extractContractErrorCode).toBe("function");
+    expect(typeof sdk.mapContractError).toBe("function");
+  });
+
+  it("exports retry, event decoder, wallet adapter, and simulation estimation", () => {
+    expect(typeof sdk.withRetry).toBe("function");
+    expect(typeof sdk.decodeTransition).toBe("function");
+    expect(typeof sdk.filterEscrowEvents).toBe("function");
+    expect(typeof sdk.createWalletSigner).toBe("function");
+    expect(typeof sdk.estimateTransaction).toBe("function");
   });
 });

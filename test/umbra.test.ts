@@ -131,7 +131,9 @@ describe("Umbra contract call delegations", () => {
 
     // Override with per-call retry disabled: fails immediately
     callCount = 0;
-    await expect(u.getEscrow(42n, { maxRetries: 0 })).rejects.toThrow("RPC flake");
+    await expect(u.getEscrow(42n, { maxRetries: 0 })).rejects.toThrow(
+      "RPC flake",
+    );
     expect(callCount).toBe(1);
   });
 

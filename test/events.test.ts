@@ -11,9 +11,7 @@ describe("events decoding and filtering", () => {
   function makeEvent(kind: string, escrowId: bigint, state: State) {
     const t0 = xdr.ScVal.scvSymbol("umbra");
     const t1 = xdr.ScVal.scvSymbol(kind);
-    const t2 = xdr.ScVal.scvU64(
-      new xdr.Uint64(Number(escrowId & 0xffffffffn), Number(escrowId >> 32n)),
-    );
+    const t2 = xdr.ScVal.scvU64(new xdr.Uint64(escrowId));
     const val = xdr.ScVal.scvU32(state);
 
     return {
@@ -58,7 +56,7 @@ describe("events decoding and filtering", () => {
         topic: [
           xdr.ScVal.scvSymbol("other"),
           xdr.ScVal.scvSymbol("kind"),
-          xdr.ScVal.scvU64(new xdr.Uint64(1, 0)),
+          xdr.ScVal.scvU64(new xdr.Uint64(1n)),
         ],
         value: xdr.ScVal.scvU32(0),
       }),
@@ -73,15 +71,15 @@ describe("events decoding and filtering", () => {
       topic: [
         xdr.ScVal.scvSymbol("contract"),
         xdr.ScVal.scvSymbol("noop"),
-        xdr.ScVal.scvU64(new xdr.Uint64(10, 0)),
+        xdr.ScVal.scvU64(new xdr.Uint64(10n)),
       ],
       value: xdr.ScVal.scvU32(0),
     };
 
     const results = filterEscrowEvents([ev1, ev2, ev3, nonUmbra], 10n);
     expect(results).toHaveLength(2);
-    expect(results[0].kind).toBe("create");
-    expect(results[1].kind).toBe("fund");
+    expect(results[0]?.kind).toBe("create");
+    expect(results[1]?.kind).toBe("fund");
     expect(results.every((r) => r.escrowId === 10n)).toBe(true);
   });
 });

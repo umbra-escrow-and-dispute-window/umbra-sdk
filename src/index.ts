@@ -36,6 +36,17 @@ export {
   SignerRequiredError,
   StateTimeoutError,
   ContractCallError,
+  EscrowNotFoundError,
+  NotAuthorizedError,
+  InvalidStateError,
+  InvalidAmountError,
+  InvalidWindowError,
+  ArbiterRequiredError,
+  DisputeWindowClosedError,
+  ConfirmWindowOpenError,
+  InvalidVerdictError,
+  extractContractErrorCode,
+  mapContractError,
 } from "./errors.js";
 
 export { withRetry, type RetryOptions } from "./retry.js";
@@ -46,6 +57,18 @@ export {
   type DecodedTransition,
   type SorobanEventLike,
 } from "./events.js";
+
+export {
+  createWalletSigner,
+  type BrowserWalletSignerLike,
+  type RawSignerFunction,
+} from "./wallet.js";
+
+export {
+  estimateTransaction,
+  type TransactionEstimation,
+  type ResourceFootprint,
+} from "./simulation.js";
 
 // Re-export the generated contract types so consumers have one import surface.
 export {
