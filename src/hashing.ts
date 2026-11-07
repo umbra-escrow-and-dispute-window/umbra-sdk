@@ -1,4 +1,5 @@
 import { hash as sha256 } from "@stellar/stellar-sdk";
+import { ValidationError } from "./validation.js";
 
 /**
  * Off-chain document hashing for Umbra.
@@ -29,11 +30,26 @@ export type JsonValue =
  * RFC 8785 sufficient for Umbra's documents.
  */
 export function canonicalize(value: JsonValue): string {
+  if (value === undefined) {
+    throw new ValidationError(
+      "cannot canonicalize undefined: JSON does not represent undefined",
+    );
+  }
+  if (typeof value === "bigint") {
+    throw new ValidationError(
+      "cannot canonicalize bigint: serialize as string or number",
+    );
+  }
+  if (typeof value === "function" || typeof value === "symbol") {
+    throw new ValidationError(
+      `cannot canonicalize unsupported type: ${typeof value}`,
+    );
+  }
   if (value === null) return "null";
   if (typeof value === "boolean") return value ? "true" : "false";
   if (typeof value === "number") {
     if (!Number.isFinite(value)) {
-      throw new Error("cannot canonicalize a non-finite number");
+      throw new ValidationError("cannot canonicalize a non-finite number");
     }
     // JSON's own number formatting is stable for finite values: integers stay
     // integers, and there is a single shortest round-trip form.
@@ -70,11 +86,16 @@ export function hashDisputeReason(reason: JsonValue): Buffer {
 }
 
 function equals(a: Buffer, expected: Buffer | Uint8Array | string): boolean {
-  const other =
-    typeof expected === "string"
-      ? Buffer.from(expected, "hex")
-      : Buffer.from(expected);
-  return a.length === other.length && a.equals(other);
+  if (!expected) return false;
+  try {
+    const other =
+      typeof expected === "string"
+        ? Buffer.from(expected, "hex")
+        : Buffer.from(expected);
+    return a.length === other.length && a.equals(other);
+  } catch {
+    return false;
+  }
 }
 
 export function verifyTerms(
