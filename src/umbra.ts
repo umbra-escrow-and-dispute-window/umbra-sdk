@@ -1,6 +1,5 @@
 import type {
   AssembledTransaction,
-  i128,
   Result,
   u32,
   u64,
@@ -12,45 +11,11 @@ import {
   type Escrow,
   type Verdict,
 } from "./generated/index.js";
-import { deployments, rpcUrls, type NetworkName } from "./deployments.js";
-import { hashTerms, type JsonValue } from "./hashing.js";
+import { deployments, rpcUrls } from "./deployments.js";
+import { hashTerms } from "./hashing.js";
+import type { HireParams, SignTransaction, UmbraOptions } from "./types.js";
 
-/** Signs a transaction envelope. Matches the Stellar SDK contract signer shape;
- * `contract.basicNodeSigner(keypair, passphrase)` produces one for a script. */
-export type SignTransaction = (
-  xdr: string,
-  opts?: {
-    networkPassphrase?: string;
-    address?: string;
-    submit?: boolean;
-    submitUrl?: string;
-  },
-) => Promise<{ signedTxXdr: string; signerAddress?: string }>;
-
-export interface UmbraOptions {
-  /** Defaults to "testnet". */
-  network?: NetworkName;
-  /** Defaults to the escrow id in the vendored deployments file. */
-  contractId?: string;
-  /** Defaults to the network's public RPC. */
-  rpcUrl?: string;
-  /** Source account for signed calls. Required to send, not to read. */
-  publicKey?: string;
-  /** Required to send, not to read. */
-  signTransaction?: SignTransaction;
-}
-
-export interface HireParams {
-  seller: string;
-  asset: string;
-  amount: i128;
-  deliverBy: u64;
-  confirmWindow: u64;
-  disputeWindow: u64;
-  arbiter: ArbiterConfig;
-  /** The terms document. It is canonicalised and hashed; only the hash is sent. */
-  terms: JsonValue;
-}
+export type { SignTransaction, UmbraOptions, HireParams };
 
 /** Convenience constructors for the arbiter enum, so callers do not hand-write
  * the tagged-union shape. Panel and Signed are declared but not implemented on

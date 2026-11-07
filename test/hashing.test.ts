@@ -69,12 +69,12 @@ describe("canonicalize", () => {
       level1: {
         level2: [
           { name: "日本語", active: true },
-          { name: "Español", count: 3 },
+          { name: "Español", active: false },
         ],
       },
     };
     expect(canonicalize(complex)).toBe(
-      '{"level1":{"level2":[{"active":true,"name":"日本語"},{"count":3,"name":"Español"}]}}',
+      '{"level1":{"level2":[{"active":true,"name":"日本語"},{"active":false,"name":"Español"}]}}',
     );
   });
 });

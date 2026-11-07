@@ -7,6 +7,11 @@ export {
   type SignTransaction,
 } from "./umbra.js";
 
+export type {
+  UmbraOptions as ClientOptions,
+  HireParams as ClientHireParams,
+} from "./types.js";
+
 export {
   canonicalize,
   hashTerms,
