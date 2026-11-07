@@ -45,17 +45,35 @@ re-implement what it specifies.
 src/
   index.ts        Public surface: what consumers import
   umbra.ts        The Umbra class, hire(), waitForState(), one method per call
+  types.ts        Shared client configuration and parameter types
   hashing.ts      Canonical JSON and the document hash functions
   deployments.ts  Loads and exports the vendored deployment
+  errors.ts       Typed error hierarchy and Soroban contract error code mapping
+  validation.ts   Pre-flight Stellar address and parameter validation helpers
+  retry.ts        Configurable exponential backoff retry utility for RPC reads
+  events.ts       Typed Transition event decoding and filtering
+  wallet.ts       Browser wallet signer adapter (Stellar Wallets Kit / Freighter)
+  simulation.ts   Transaction resource footprint and fee estimation helpers
   generated/      GENERATED from the deployed contract; do not edit by hand
 deployments/
   testnet.json    Vendored from the contract repository's release
 docs/
+  architecture.md Module boundaries, data flow, and design decisions
   hashing.md      Normative hashing conventions
   multi-repo.md   Cross-repository contract, shared across all three repos
+  wallet.md       Browser wallet and simulation usage guides
 test/
-  hashing.test.ts      Canonicalisation and hashing, including edge cases
-  umbra.test.ts        Client construction and enum helpers, no network
+  hashing.test.ts      Canonicalisation, hashing, and conformance vector suite
+  umbra.test.ts        Client construction, polling, retry, and validation tests
+  events.test.ts       Soroban Transition event decoding and filtering tests
+  errors.test.ts       Typed error classes and contract error mapping tests
+  validation.test.ts   Stellar StrKey and parameter validation tests
+  wallet.test.ts       Browser wallet signer adapter tests
+  simulation.test.ts   Fee and resource footprint estimation tests
+  retry.test.ts        Exponential backoff retry tests
+  deployments.test.ts  Deployment configuration tests
+  index.test.ts        Public entrypoint export verification
+  vectors.json         Cross-repository canonical JSON and SHA-256 test vectors
   integration.test.ts  Testnet cycle, skipped unless STELLAR_SECRET is set
 ```
 
@@ -134,25 +152,27 @@ A reviewer will send a pull request back for any of these:
 
 ## Code style
 
-TypeScript, ESM. Formatter and linter is ESLint (flat config). Type-checked with
-`tsc`. Tests with Vitest. Commits follow
+TypeScript, ESM. Formatter is Prettier; linter is ESLint (flat config). Type-checked with
+`tsc`. Tests and coverage with Vitest. Commits follow
 [Conventional Commits](https://www.conventionalcommits.org). Branch names are
 `type/short-description`, for example `feat/event-decoding`.
 
-CI runs exactly these, and they must pass:
+CI runs these on Node 20 and Node 22, and they must pass:
 
 ```bash
+pnpm format:check
 pnpm lint
 pnpm typecheck
-pnpm test
+pnpm test:coverage
 pnpm build
 ```
 
 ## Pull request checklist
 
+- [ ] `pnpm format:check` clean (run `pnpm format` to auto-format)
 - [ ] `pnpm lint` clean
 - [ ] `pnpm typecheck` clean
-- [ ] `pnpm test` green
+- [ ] `pnpm test:coverage` green
 - [ ] `pnpm build` succeeds
 - [ ] No secret keys read, logged, or stored anywhere
 - [ ] `src/generated/` not hand-edited

@@ -59,9 +59,9 @@ describe("canonicalize", () => {
 
   it("verify functions return false for null, empty, or mismatched hashes", () => {
     expect(verifyTerms({ a: 1 }, "")).toBe(false);
-    expect(
-      verifyDeliveryProof({ a: 1 }, null as unknown as string),
-    ).toBe(false);
+    expect(verifyDeliveryProof({ a: 1 }, null as unknown as string)).toBe(
+      false,
+    );
     expect(verifyDisputeReason({ a: 1 }, "badhex123")).toBe(false);
   });
 

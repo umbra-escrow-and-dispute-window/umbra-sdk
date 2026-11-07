@@ -1,0 +1,35 @@
+name: testnet-integration
+
+on:
+  schedule:
+    # Weekly on Mondays at 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  integration:
+    name: Soroban Testnet Integration
+    runs-on: ubuntu-latest
+    if: ${{ secrets.STELLAR_SECRET != '' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Testnet integration suite
+        env:
+          STELLAR_SECRET: ${{ secrets.STELLAR_SECRET }}
+          STELLAR_SELLER: ${{ secrets.STELLAR_SELLER }}
+          STELLAR_SELLER_SECRET: ${{ secrets.STELLAR_SELLER_SECRET }}
+          STELLAR_ARBITER: ${{ secrets.STELLAR_ARBITER }}
+          STELLAR_ASSET: ${{ secrets.STELLAR_ASSET }}
+        run: pnpm vitest run test/integration.test.ts
