@@ -63,6 +63,20 @@ describe("canonicalize", () => {
       '{"text":"line 1\\nline 2\\t\\"quoted\\""}',
     );
   });
+
+  it("handles deep structures and multicharacter unicode reliably", () => {
+    const complex = {
+      level1: {
+        level2: [
+          { name: "日本語", active: true },
+          { name: "Español", count: 3 },
+        ],
+      },
+    };
+    expect(canonicalize(complex)).toBe(
+      '{"level1":{"level2":[{"active":true,"name":"日本語"},{"count":3,"name":"Español"}]}}',
+    );
+  });
 });
 
 describe("document hashing", () => {
