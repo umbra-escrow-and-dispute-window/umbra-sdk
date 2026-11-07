@@ -26,6 +26,13 @@ export {
   type NetworkName,
 } from "./deployments.js";
 
+export {
+  UmbraError,
+  SignerRequiredError,
+  StateTimeoutError,
+  ContractCallError,
+} from "./errors.js";
+
 // Re-export the generated contract types so consumers have one import surface.
 export {
   Client as EscrowClient,
