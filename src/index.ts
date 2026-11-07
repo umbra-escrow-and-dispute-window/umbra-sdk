@@ -47,6 +47,12 @@ export {
   type SorobanEventLike,
 } from "./events.js";
 
+export {
+  createWalletSigner,
+  type BrowserWalletSignerLike,
+  type RawSignerFunction,
+} from "./wallet.js";
+
 // Re-export the generated contract types so consumers have one import surface.
 export {
   Client as EscrowClient,
