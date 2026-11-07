@@ -13,6 +13,7 @@ import {
 } from "./generated/index.js";
 import { deployments, rpcUrls } from "./deployments.js";
 import { hashTerms } from "./hashing.js";
+import { SignerRequiredError, StateTimeoutError } from "./errors.js";
 import type { HireParams, SignTransaction, UmbraOptions } from "./types.js";
 
 export type { SignTransaction, UmbraOptions, HireParams };
@@ -66,9 +67,7 @@ export class Umbra {
    * public key is the buyer. Returns the new escrow id. */
   async hire(params: HireParams): Promise<{ escrowId: u64 }> {
     if (!this.client.options.publicKey) {
-      throw new Error(
-        "hire requires a signer: set publicKey and signTransaction",
-      );
+      throw new SignerRequiredError();
     }
     const terms_hash = hashTerms(params.terms);
 
@@ -104,9 +103,7 @@ export class Umbra {
       const escrow = await this.getEscrow(escrowId);
       if (escrow && escrow.state === state) return escrow;
       if (Date.now() >= deadline) {
-        throw new Error(
-          `escrow ${escrowId} did not reach ${State[state]} within ${timeoutMs}ms`,
-        );
+        throw new StateTimeoutError(escrowId, state, timeoutMs);
       }
       await new Promise((r) => setTimeout(r, intervalMs));
     }
