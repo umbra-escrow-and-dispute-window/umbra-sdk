@@ -1,0 +1,63 @@
+{
+  "description": "Canonical off-chain hashing conformance test vectors for Umbra",
+  "version": "1",
+  "domains": {
+    "terms": "umbra:terms:v1",
+    "deliveryProof": "umbra:delivery-proof:v1",
+    "disputeReason": "umbra:dispute-reason:v1"
+  },
+  "vectors": [
+    {
+      "id": "key_order_canonicalization",
+      "description": "Keys must sort lexicographically regardless of input ordering",
+      "document": { "z": 1, "a": 2 },
+      "alternate_document": { "a": 2, "z": 1 },
+      "canonical_json": "{\"a\":2,\"z\":1}",
+      "domain": "umbra:terms:v1",
+      "expected_hash": "30f46bbe9eb689c68194e26d8464ca09d44a5344c2b2fccf24fe3c1e90c56d3f"
+    },
+    {
+      "id": "unicode_nfc_normalization",
+      "description": "Combining accents must normalize to precomposed NFC bytes",
+      "document": { "name": "café" },
+      "decomposed_document": { "name": "cafe\u0301" },
+      "canonical_json": "{\"name\":\"café\"}",
+      "domain": "umbra:terms:v1",
+      "expected_hash": "0aafeef8fe64a98a06fdf6dcac52cc7de13417c5e1e0a55a3bd83ae85f8141ea"
+    },
+    {
+      "id": "nested_structures",
+      "description": "Nested objects and arrays must preserve array order while sorting object keys",
+      "document": {
+        "level1": {
+          "items": [1, 2, { "sub": "val" }]
+        }
+      },
+      "canonical_json": "{\"level1\":{\"items\":[1,2,{\"sub\":\"val\"}]}}",
+      "domain": "umbra:delivery-proof:v1",
+      "expected_hash": "182bb2796190bf43a2161502b302a836ae534f33934b115e186fd5b3b1508757"
+    },
+    {
+      "id": "string_amount_convention",
+      "description": "Amounts must be represented as strings to preserve full 64-bit and 128-bit precision",
+      "document": {
+        "amount": "500000000",
+        "asset": "USDC"
+      },
+      "canonical_json": "{\"amount\":\"500000000\",\"asset\":\"USDC\"}",
+      "domain": "umbra:terms:v1",
+      "expected_hash": "251d358dc747f98d814d9f4edfbe7b6c58adc9a69a43cc019bfa8f24158dede8"
+    },
+    {
+      "id": "domain_separation",
+      "description": "Identical document body under dispute reason domain produces distinct hash",
+      "document": {
+        "amount": "500000000",
+        "asset": "USDC"
+      },
+      "canonical_json": "{\"amount\":\"500000000\",\"asset\":\"USDC\"}",
+      "domain": "umbra:dispute-reason:v1",
+      "expected_hash": "16969b10c9ab6a3c5a8beec494f8ab5ba24c45717ef8a3a75da1f15d9dbb9f11"
+    }
+  ]
+}
