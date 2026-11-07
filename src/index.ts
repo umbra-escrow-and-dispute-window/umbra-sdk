@@ -38,6 +38,15 @@ export {
   ContractCallError,
 } from "./errors.js";
 
+export { withRetry, type RetryOptions } from "./retry.js";
+
+export {
+  decodeTransition,
+  filterEscrowEvents,
+  type DecodedTransition,
+  type SorobanEventLike,
+} from "./events.js";
+
 // Re-export the generated contract types so consumers have one import surface.
 export {
   Client as EscrowClient,

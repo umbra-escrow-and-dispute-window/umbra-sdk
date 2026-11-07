@@ -2,6 +2,7 @@ import type { i128, u64 } from "@stellar/stellar-sdk/contract";
 import type { ArbiterConfig } from "./generated/index.js";
 import type { JsonValue } from "./hashing.js";
 import type { NetworkName } from "./deployments.js";
+import type { RetryOptions } from "./retry.js";
 
 /**
  * Signs a transaction envelope. Matches the Stellar SDK contract signer shape;
@@ -28,6 +29,8 @@ export interface UmbraOptions {
   publicKey?: string;
   /** Required to send, not to read. */
   signTransaction?: SignTransaction;
+  /** Configurable retry policy for RPC read calls. Off by default. */
+  retry?: RetryOptions;
 }
 
 export interface HireParams {

@@ -14,6 +14,7 @@ import {
 import { deployments, rpcUrls } from "./deployments.js";
 import { hashTerms } from "./hashing.js";
 import { SignerRequiredError, StateTimeoutError } from "./errors.js";
+import { withRetry, type RetryOptions } from "./retry.js";
 import type { HireParams, SignTransaction, UmbraOptions } from "./types.js";
 
 export type { SignTransaction, UmbraOptions, HireParams };
@@ -40,11 +41,13 @@ export class Umbra {
   readonly client: Client;
   readonly contractId: string;
   readonly networkPassphrase: string;
+  readonly defaultRetry?: RetryOptions;
 
   constructor(options: UmbraOptions = {}) {
     const network = options.network ?? "testnet";
     this.contractId = options.contractId ?? deployments.contracts.escrow!;
     this.networkPassphrase = deployments.networkPassphrase;
+    this.defaultRetry = options.retry;
     const rpcUrl = options.rpcUrl ?? rpcUrls[network];
 
     this.client = new Client({
@@ -57,10 +60,19 @@ export class Umbra {
     });
   }
 
-  /** Read an escrow, or undefined if it does not exist. Read-only; no signer. */
-  async getEscrow(escrowId: u64): Promise<Escrow | undefined> {
-    const tx = await this.client.get_escrow({ escrow_id: escrowId });
-    return tx.result ?? undefined;
+  /**
+   * Read an escrow, or undefined if it does not exist. Read-only; no signer.
+   * Supports optional retry configuration (off by default).
+   */
+  async getEscrow(
+    escrowId: u64,
+    retryOptions?: RetryOptions,
+  ): Promise<Escrow | undefined> {
+    const opts = retryOptions ?? this.defaultRetry;
+    return withRetry(async () => {
+      const tx = await this.client.get_escrow({ escrow_id: escrowId });
+      return tx.result ?? undefined;
+    }, opts);
   }
 
   /** Create and fund an escrow in one call, for agents. Requires a signer whose
