@@ -1,0 +1,32 @@
+name: Feature Request
+description: Propose a new feature or improvement for Umbra SDK
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem or use case does this feature address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution / API
+      description: Describe the proposed API surface, method signatures, or behavior.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Protocol Scope
+      description: Does this change require changes to `umbra-contracts` on-chain or is it purely an SDK/client enhancement?
+      options:
+        - SDK client / off-chain helper only
+        - Requires Soroban contract changes (umbra-contracts)
+        - Documentation / tooling
+    validations:
+      required: true
