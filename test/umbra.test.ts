@@ -293,7 +293,7 @@ describe("Umbra contract call delegations", () => {
   it("hire creates and funds an escrow end-to-end", async () => {
     const mockSigner = async (xdr: string) => ({ signedTxXdr: xdr });
     const u = new Umbra({
-      publicKey: "GBUYER1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      publicKey: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
       signTransaction: mockSigner,
     });
 
@@ -323,18 +323,70 @@ describe("Umbra contract call delegations", () => {
     }) as unknown as typeof u.client.fund;
 
     const res = await u.hire({
-      seller: "GSELLER",
-      asset: "CASSET",
+      seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+      asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
       amount: 5000n,
       deliverBy: 123456n,
       confirmWindow: 3600n,
       disputeWindow: 3600n,
-      arbiter: arbiter.single("GARBITER"),
+      arbiter: arbiter.single(
+        "GBUBKQXEC6J7O566GNLEBPBPIQCD3YV4FTL5M73WOBNBOHWSGAG2B5MA",
+      ),
       terms: { task: "code review" },
     });
 
     expect(res).toEqual({ escrowId: 101n });
     expect(createdCalled).toBe(true);
     expect(fundCalled).toBe(true);
+  });
+
+  it("hire rejects invalid parameters before contract calls", async () => {
+    const mockSigner = async (xdr: string) => ({ signedTxXdr: xdr });
+    const u = new Umbra({
+      publicKey: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
+      signTransaction: mockSigner,
+    });
+
+    // Invalid seller
+    await expect(
+      u.hire({
+        seller: "GINVALID",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 100n,
+        deliverBy: 1000n,
+        confirmWindow: 100n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/Invalid Stellar address for 'seller'/);
+
+    // Zero amount
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 0n,
+        deliverBy: 1000n,
+        confirmWindow: 100n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/'amount' must be greater than zero/);
+
+    // Invalid deliverBy
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 50n,
+        deliverBy: 0n,
+        confirmWindow: 100n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/'deliverBy' must be greater than zero/);
   });
 });
