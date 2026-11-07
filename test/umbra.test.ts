@@ -112,6 +112,29 @@ describe("Umbra contract call delegations", () => {
     expect(missing).toBeUndefined();
   });
 
+  it("retries getEscrow when configured per instance or per call", async () => {
+    let callCount = 0;
+    const u = new Umbra({
+      retry: { maxRetries: 2, initialDelayMs: 5, maxDelayMs: 15 },
+    });
+    u.client.get_escrow = (async () => {
+      callCount++;
+      if (callCount < 2) {
+        throw new Error("RPC flake");
+      }
+      return { result: dummyEscrow };
+    }) as unknown as typeof u.client.get_escrow;
+
+    const res = await u.getEscrow(42n);
+    expect(res).toEqual(dummyEscrow);
+    expect(callCount).toBe(2);
+
+    // Override with per-call retry disabled: fails immediately
+    callCount = 0;
+    await expect(u.getEscrow(42n, { maxRetries: 0 })).rejects.toThrow("RPC flake");
+    expect(callCount).toBe(1);
+  });
+
   it("delegates fund, markDelivered, confirm, claimTimeout, dispute, resolve, and cancel", async () => {
     const u = new Umbra();
     let called: string | null = null;
