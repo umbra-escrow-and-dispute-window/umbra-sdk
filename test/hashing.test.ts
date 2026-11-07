@@ -9,6 +9,7 @@ import {
   verifyDeliveryProof,
   verifyDisputeReason,
   DOMAIN,
+  type JsonValue,
 } from "../src/index.js";
 
 describe("canonicalize", () => {
@@ -138,18 +139,19 @@ describe("document hashing", () => {
 describe("cross-protocol conformance vectors (test/vectors.json)", () => {
   it("validates every test vector against canonical serialization and expected hashes", () => {
     for (const v of vectorsFixture.vectors) {
-      expect(canonicalize(v.document)).toBe(v.canonical_json);
+      const doc = v.document as unknown as JsonValue;
+      expect(canonicalize(doc)).toBe(v.canonical_json);
 
       let computedHash: Buffer;
       if (v.domain === DOMAIN.terms) {
-        computedHash = hashTerms(v.document);
-        expect(verifyTerms(v.document, v.expected_hash)).toBe(true);
+        computedHash = hashTerms(doc);
+        expect(verifyTerms(doc, v.expected_hash)).toBe(true);
       } else if (v.domain === DOMAIN.deliveryProof) {
-        computedHash = hashDeliveryProof(v.document);
-        expect(verifyDeliveryProof(v.document, v.expected_hash)).toBe(true);
+        computedHash = hashDeliveryProof(doc);
+        expect(verifyDeliveryProof(doc, v.expected_hash)).toBe(true);
       } else if (v.domain === DOMAIN.disputeReason) {
-        computedHash = hashDisputeReason(v.document);
-        expect(verifyDisputeReason(v.document, v.expected_hash)).toBe(true);
+        computedHash = hashDisputeReason(doc);
+        expect(verifyDisputeReason(doc, v.expected_hash)).toBe(true);
       } else {
         throw new Error(`Unknown domain: ${v.domain}`);
       }
@@ -157,17 +159,15 @@ describe("cross-protocol conformance vectors (test/vectors.json)", () => {
       expect(computedHash.toString("hex")).toBe(v.expected_hash);
 
       if ("alternate_document" in v) {
-        expect(canonicalize(v.alternate_document)).toBe(v.canonical_json);
-        expect(hashTerms(v.alternate_document).toString("hex")).toBe(
-          v.expected_hash,
-        );
+        const altDoc = v.alternate_document as unknown as JsonValue;
+        expect(canonicalize(altDoc)).toBe(v.canonical_json);
+        expect(hashTerms(altDoc).toString("hex")).toBe(v.expected_hash);
       }
 
       if ("decomposed_document" in v) {
-        expect(canonicalize(v.decomposed_document)).toBe(v.canonical_json);
-        expect(hashTerms(v.decomposed_document).toString("hex")).toBe(
-          v.expected_hash,
-        );
+        const decompDoc = v.decomposed_document as unknown as JsonValue;
+        expect(canonicalize(decompDoc)).toBe(v.canonical_json);
+        expect(hashTerms(decompDoc).toString("hex")).toBe(v.expected_hash);
       }
     }
   });
