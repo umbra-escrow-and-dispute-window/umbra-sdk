@@ -61,6 +61,29 @@ describe("events decoding and filtering", () => {
         value: xdr.ScVal.scvU32(0),
       }),
     ).toBeNull();
+    expect(
+      decodeTransition({
+        topic: ["", "create", "1"],
+        value: xdr.ScVal.scvU32(0),
+      }),
+    ).toBeNull();
+    expect(
+      decodeTransition({
+        topic: ["not-valid-xdr!!!", "create", "1"],
+        value: "not-valid-xdr!!!",
+      }),
+    ).toBeNull();
+    // Numeric topic[2] (u32 instead of u64) coerces cleanly via BigInt()
+    const numericIdDecoded = decodeTransition({
+      topic: [
+        xdr.ScVal.scvSymbol("umbra"),
+        xdr.ScVal.scvSymbol("confirm"),
+        xdr.ScVal.scvU32(7),
+      ],
+      value: xdr.ScVal.scvU32(State.Released),
+    });
+    expect(numericIdDecoded?.escrowId).toBe(7n);
+    expect(numericIdDecoded?.state).toBe(State.Released);
   });
 
   it("filters a list of events for a target escrow id", () => {

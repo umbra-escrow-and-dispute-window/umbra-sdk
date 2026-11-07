@@ -70,6 +70,15 @@ export {
   type ResourceFootprint,
 } from "./simulation.js";
 
+export {
+  ValidationError,
+  isValidStellarAddress,
+  assertValidStellarAddress,
+  assertPositiveAmount,
+  assertPositiveNumber,
+  assertNonEmptyString,
+} from "./validation.js";
+
 // Re-export the generated contract types so consumers have one import surface.
 export {
   Client as EscrowClient,

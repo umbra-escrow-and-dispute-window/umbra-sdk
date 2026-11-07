@@ -2,3 +2,8 @@
 # script only verifies it. Allow it to run so pnpm install exits clean in CI.
 allowBuilds:
   esbuild: true
+
+overrides:
+  axios: ">=1.20.0"
+  follow-redirects: ">=1.16.2"
+  smol-toml: ">=1.9.0"

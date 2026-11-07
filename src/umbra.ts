@@ -14,6 +14,11 @@ import {
 import { deployments, rpcUrls } from "./deployments.js";
 import { hashTerms } from "./hashing.js";
 import { SignerRequiredError, StateTimeoutError } from "./errors.js";
+import {
+  assertValidStellarAddress,
+  assertPositiveAmount,
+  ValidationError,
+} from "./validation.js";
 import { withRetry, type RetryOptions } from "./retry.js";
 import type { HireParams, SignTransaction, UmbraOptions } from "./types.js";
 
@@ -81,6 +86,29 @@ export class Umbra {
     if (!this.client.options.publicKey) {
       throw new SignerRequiredError();
     }
+
+    assertValidStellarAddress(params.seller, "seller");
+    assertValidStellarAddress(params.asset, "asset");
+    assertPositiveAmount(params.amount, "amount");
+    if (params.deliverBy <= 0n) {
+      throw new ValidationError(
+        "'deliverBy' must be greater than zero",
+        "deliverBy",
+      );
+    }
+    if (params.confirmWindow <= 0n) {
+      throw new ValidationError(
+        "'confirmWindow' must be greater than zero",
+        "confirmWindow",
+      );
+    }
+    if (params.disputeWindow <= 0n) {
+      throw new ValidationError(
+        "'disputeWindow' must be greater than zero",
+        "disputeWindow",
+      );
+    }
+
     const terms_hash = hashTerms(params.terms);
 
     const create = await this.client.create_escrow({
