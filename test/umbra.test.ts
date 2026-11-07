@@ -388,5 +388,33 @@ describe("Umbra contract call delegations", () => {
         terms: {},
       }),
     ).rejects.toThrow(/'deliverBy' must be greater than zero/);
+
+    // Invalid confirmWindow
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 50n,
+        deliverBy: 1000n,
+        confirmWindow: 0n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/'confirmWindow' must be greater than zero/);
+
+    // Invalid disputeWindow
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 50n,
+        deliverBy: 1000n,
+        confirmWindow: 100n,
+        disputeWindow: 0n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/'disputeWindow' must be greater than zero/);
   });
 });
