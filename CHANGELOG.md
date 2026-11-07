@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0-rc.1] - 2026-11-07
 
 ### Added
+
 - **Umbra Client (`src/umbra.ts`)**: Typed wrapper around the Soroban escrow contract with one method per contract call (`fund`, `markDelivered`, `confirm`, `claimTimeout`, `dispute`, `resolve`, `cancel`, `getEscrow`), an agent-facing `hire` flow (`create_escrow` + `fund`), and `waitForState` polling.
 - **Canonical Document Hashing (`src/hashing.ts`)**: Deterministic RFC 8785-subset JSON canonicalization (sorted keys, Unicode NFC normalization, finite number validation) and domain-separated SHA-256 helpers (`hashTerms`, `hashDeliveryProof`, `hashDisputeReason`, and `verify*` counterparts).
 - **Cross-Protocol Conformance Vectors (`test/vectors.json`)**: Canonical JSON and SHA-256 test vectors shared across the Umbra protocol repositories.
@@ -20,5 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation & Governance**: Added `docs/architecture.md`, `docs/wallet.md`, `CODE_OF_CONDUCT.md`, GitHub issue/PR templates, and multi-Node CI and scheduled Testnet integration workflows.
 
 ### Fixed
+
 - Replaced untyped `AssembledTransaction<any>` return signatures with strictly typed `AssembledTransaction<Result<void>>` and enabled `@typescript-eslint/no-explicit-any`.
 - Patched transitive dependency advisories in `axios`, `follow-redirects`, and `smol-toml` via workspace overrides.
