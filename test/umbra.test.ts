@@ -207,6 +207,43 @@ describe("Umbra contract call delegations", () => {
     expect(polls).toBe(2);
   });
 
+  it("waitForState returns immediately if initial state matches", async () => {
+    const u = new Umbra();
+    let polls = 0;
+    u.client.get_escrow = (async () => {
+      polls++;
+      return {
+        result: {
+          ...dummyEscrow,
+          state: State.Funded,
+        },
+      };
+    }) as unknown as typeof u.client.get_escrow;
+
+    const res = await u.waitForState(42n, State.Funded, 1000, 10);
+    expect(res.state).toBe(State.Funded);
+    expect(polls).toBe(1);
+  });
+
+  it("waitForState survives transient null reads before matching state", async () => {
+    const u = new Umbra();
+    let polls = 0;
+    u.client.get_escrow = (async () => {
+      polls++;
+      if (polls === 1) return { result: null };
+      return {
+        result: {
+          ...dummyEscrow,
+          state: State.Delivered,
+        },
+      };
+    }) as unknown as typeof u.client.get_escrow;
+
+    const res = await u.waitForState(42n, State.Delivered, 1000, 10);
+    expect(res.state).toBe(State.Delivered);
+    expect(polls).toBe(2);
+  });
+
   it("waitForState times out if target state is not reached", async () => {
     const u = new Umbra();
     u.client.get_escrow = (async () => ({
