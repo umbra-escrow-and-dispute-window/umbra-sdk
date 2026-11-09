@@ -161,6 +161,18 @@ export class Umbra {
         "disputeWindow",
       );
     }
+    if (params.confirmWindow < params.disputeWindow) {
+      throw new ValidationError(
+        "confirmWindow must be greater than or equal to disputeWindow",
+        "confirmWindow",
+      );
+    }
+    if (params.disputeBond !== undefined && params.disputeBond < 0n) {
+      throw new ValidationError(
+        "'disputeBond' cannot be negative",
+        "disputeBond",
+      );
+    }
 
     const terms_hash = hashTerms(params.terms);
 
@@ -256,7 +268,10 @@ export class Umbra {
     }
     const unique = Array.from(new Set(signers));
     if (unique.length !== signers.length) {
-      throw new ValidationError("duplicate signer detected in panel", "signers");
+      throw new ValidationError(
+        "duplicate signer detected in panel",
+        "signers",
+      );
     }
     for (const s of signers) {
       assertValidStellarAddress(s, "signer address");

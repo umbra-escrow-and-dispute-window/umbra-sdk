@@ -66,7 +66,12 @@ describe("Umbra construction", () => {
 describe("enum helpers", () => {
   it("builds arbiter variants", () => {
     expect(arbiter.none()).toEqual({ tag: "None", values: undefined });
-    expect(arbiter.single("G...")).toEqual({ tag: "Single", values: ["G..."] });
+    const validAddr =
+      "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7";
+    expect(arbiter.single(validAddr)).toEqual({
+      tag: "Single",
+      values: [validAddr],
+    });
   });
 
   it("builds verdict variants", () => {
@@ -416,5 +421,34 @@ describe("Umbra contract call delegations", () => {
         terms: {},
       }),
     ).rejects.toThrow(/'disputeWindow' must be greater than zero/);
+
+    // confirmWindow shorter than disputeWindow
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 50n,
+        deliverBy: 1000n,
+        confirmWindow: 50n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+      }),
+    ).rejects.toThrow(/confirmWindow must be greater than or equal to disputeWindow/);
+
+    // Negative disputeBond
+    await expect(
+      u.hire({
+        seller: "GAWPX77S5YGLCHLXNFRSKL2RQ5UG7GVQFZLMZXH7AMFP5XE46FQDYIQM",
+        asset: "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+        amount: 50n,
+        deliverBy: 1000n,
+        confirmWindow: 100n,
+        disputeWindow: 100n,
+        arbiter: arbiter.none(),
+        terms: {},
+        disputeBond: -10n,
+      }),
+    ).rejects.toThrow(/'disputeBond' cannot be negative/);
   });
 });

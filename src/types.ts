@@ -43,4 +43,6 @@ export interface HireParams {
   arbiter: ArbiterConfig;
   /** The terms document. It is canonicalised and hashed; only the hash is sent. */
   terms: JsonValue;
+  /** Optional dispute bond (in stroops) required to file a dispute. Defaults to 0. */
+  disputeBond?: i128;
 }
