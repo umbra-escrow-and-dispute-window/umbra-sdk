@@ -45,6 +45,10 @@ export {
   DisputeWindowClosedError,
   ConfirmWindowOpenError,
   InvalidVerdictError,
+  InvalidWindowOrderingError,
+  BelowThresholdError,
+  DuplicateSignerError,
+  InvalidThresholdError,
   extractContractErrorCode,
   mapContractError,
 } from "./errors.js";

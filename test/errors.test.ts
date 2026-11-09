@@ -13,6 +13,10 @@ import {
   DisputeWindowClosedError,
   ConfirmWindowOpenError,
   InvalidVerdictError,
+  InvalidWindowOrderingError,
+  BelowThresholdError,
+  DuplicateSignerError,
+  InvalidThresholdError,
   extractContractErrorCode,
   mapContractError,
   State,
@@ -144,6 +148,18 @@ describe("contract error extraction and mapping", () => {
 
     const err10 = mapContractError("Contract, #10");
     expect(err10).toBeInstanceOf(InvalidVerdictError);
+
+    const err12 = mapContractError("Contract, #12");
+    expect(err12).toBeInstanceOf(InvalidWindowOrderingError);
+
+    const err13 = mapContractError("Contract, #13");
+    expect(err13).toBeInstanceOf(BelowThresholdError);
+
+    const err14 = mapContractError("Contract, #14");
+    expect(err14).toBeInstanceOf(DuplicateSignerError);
+
+    const err15 = mapContractError("Contract, #15");
+    expect(err15).toBeInstanceOf(InvalidThresholdError);
 
     const unknownErr = mapContractError("network connection reset");
     expect(unknownErr).toBeInstanceOf(ContractCallError);

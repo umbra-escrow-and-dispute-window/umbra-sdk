@@ -69,7 +69,11 @@ export const Errors = {
    * Split verdict with buyer_bps outside 0..=10000.
    */
   10: {message:"InvalidVerdict"},
-  11: {message:"Overflow"}
+  11: {message:"Overflow"},
+  12: {message:"InvalidWindowOrdering"},
+  13: {message:"BelowThreshold"},
+  14: {message:"DuplicateSigner"},
+  15: {message:"InvalidThreshold"}
 }
 
 /**

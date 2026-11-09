@@ -115,6 +115,34 @@ export class InvalidVerdictError extends ContractCallError {
   }
 }
 
+/** Thrown when confirm window is shorter than dispute window (Contract Error #12). */
+export class InvalidWindowOrderingError extends ContractCallError {
+  constructor(message = "confirm_window must be >= dispute_window") {
+    super(message, 12, "INVALID_WINDOW_ORDERING");
+  }
+}
+
+/** Thrown when panel arbitration has fewer than threshold valid signatures (Contract Error #13). */
+export class BelowThresholdError extends ContractCallError {
+  constructor(message = "below arbitration threshold requirement") {
+    super(message, 13, "BELOW_THRESHOLD");
+  }
+}
+
+/** Thrown when duplicate panel signatures are submitted (Contract Error #14). */
+export class DuplicateSignerError extends ContractCallError {
+  constructor(message = "duplicate arbiter signer detected") {
+    super(message, 14, "DUPLICATE_SIGNER");
+  }
+}
+
+/** Thrown when arbiter panel threshold is zero or exceeds member count (Contract Error #15). */
+export class InvalidThresholdError extends ContractCallError {
+  constructor(message = "invalid panel arbitration threshold") {
+    super(message, 15, "INVALID_THRESHOLD");
+  }
+}
+
 /**
  * Extracts a numeric Soroban contract error code from an error or error message string.
  */
@@ -166,6 +194,14 @@ export function mapContractError(error: unknown): ContractCallError {
       return new ConfirmWindowOpenError(baseMessage);
     case 10:
       return new InvalidVerdictError(baseMessage);
+    case 12:
+      return new InvalidWindowOrderingError(baseMessage);
+    case 13:
+      return new BelowThresholdError(baseMessage);
+    case 14:
+      return new DuplicateSignerError(baseMessage);
+    case 15:
+      return new InvalidThresholdError(baseMessage);
     default:
       return error instanceof ContractCallError
         ? error
