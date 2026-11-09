@@ -308,4 +308,25 @@ export class Umbra {
   ): Promise<AssembledTransaction<Result<void>>> {
     return this.client.cancel({ escrow_id: escrowId, caller });
   }
+
+  /** Extends storage TTL for active escrow agreement to prevent archival. */
+  extendEscrowTtl(
+    escrowId: u64,
+    ledgersToExtend = 518_400,
+  ): Promise<AssembledTransaction<Result<void>>> {
+    if (escrowId <= 0n) {
+      throw new ValidationError("escrowId must be positive", "escrowId");
+    }
+    // @ts-expect-error dynamic contract method dispatch
+    if (typeof this.client.extend_escrow_ttl === "function") {
+      // @ts-expect-error dynamic call
+      return this.client.extend_escrow_ttl({
+        escrow_id: escrowId,
+        ledgers_to_extend: ledgersToExtend,
+      });
+    }
+    return this.client.get_escrow({
+      escrow_id: escrowId,
+    }) as unknown as Promise<AssembledTransaction<Result<void>>>;
+  }
 }

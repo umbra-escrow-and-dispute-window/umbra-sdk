@@ -225,6 +225,20 @@ describe("Umbra contract call delegations", () => {
     await u.cancel(10n, "GBUYER");
     expect(called).toBe("cancel");
     expect(receivedArgs).toEqual({ escrow_id: 10n, caller: "GBUYER" });
+
+    // extendEscrowTtl with dynamic method
+    // @ts-expect-error dynamic stub
+    u.client.extend_escrow_ttl = async (args: unknown) => {
+      called = "extend_escrow_ttl";
+      receivedArgs = args;
+      return { result: undefined };
+    };
+    await u.extendEscrowTtl(10n, 100_000);
+    expect(called).toBe("extend_escrow_ttl");
+    expect(receivedArgs).toEqual({
+      escrow_id: 10n,
+      ledgers_to_extend: 100_000,
+    });
   });
 
   it("waitForState resolves when target state matches", async () => {
@@ -434,7 +448,9 @@ describe("Umbra contract call delegations", () => {
         arbiter: arbiter.none(),
         terms: {},
       }),
-    ).rejects.toThrow(/confirmWindow must be greater than or equal to disputeWindow/);
+    ).rejects.toThrow(
+      /confirmWindow must be greater than or equal to disputeWindow/,
+    );
 
     // Negative disputeBond
     await expect(
