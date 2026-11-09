@@ -29,10 +29,63 @@ export type { SignTransaction, UmbraOptions, HireParams };
  * chain in v0.1; the contract returns Unimplemented at resolve time. */
 export const arbiter = {
   none: (): ArbiterConfig => ({ tag: "None", values: undefined }),
-  single: (address: string): ArbiterConfig => ({
-    tag: "Single",
-    values: [address],
-  }),
+  single: (address: string): ArbiterConfig => {
+    assertValidStellarAddress(address, "arbiter address");
+    return {
+      tag: "Single",
+      values: [address],
+    };
+  },
+  panel: (members: string[], threshold: number): ArbiterConfig => {
+    if (!Array.isArray(members) || members.length === 0) {
+      throw new ValidationError(
+        "panel must have at least one member",
+        "members",
+      );
+    }
+    const unique = Array.from(new Set(members));
+    if (unique.length !== members.length) {
+      throw new ValidationError("panel members contains duplicates", "members");
+    }
+    for (const m of members) {
+      assertValidStellarAddress(m, "panel member address");
+    }
+    if (
+      !Number.isInteger(threshold) ||
+      threshold <= 0 ||
+      threshold > members.length
+    ) {
+      throw new ValidationError(
+        `threshold must be between 1 and ${members.length}`,
+        "threshold",
+      );
+    }
+    return {
+      tag: "Panel",
+      values: [members, threshold],
+    };
+  },
+  signed: (publicKey: Buffer | Uint8Array | string): ArbiterConfig => {
+    let buf: Buffer;
+    if (typeof publicKey === "string") {
+      buf = Buffer.from(
+        publicKey.startsWith("0x") ? publicKey.slice(2) : publicKey,
+        "hex",
+      );
+    } else {
+      buf = Buffer.from(publicKey);
+    }
+    if (buf.length !== 32) {
+      throw new ValidationError(
+        "adjudicator public key must be exactly 32 bytes",
+        "publicKey",
+      );
+    }
+    return {
+      tag: "Signed",
+      values: [buf],
+    };
+  },
 };
 
 /** Convenience constructors for verdicts. */
@@ -188,6 +241,50 @@ export class Umbra {
       escrow_id: escrowId,
       verdict: v,
       signature: signature ?? undefined,
+    });
+  }
+  resolvePanel(
+    escrowId: u64,
+    v: Verdict,
+    signers: string[],
+  ): Promise<AssembledTransaction<Result<void>>> {
+    if (!Array.isArray(signers) || signers.length === 0) {
+      throw new ValidationError(
+        "panel resolution requires at least one signer",
+        "signers",
+      );
+    }
+    const unique = Array.from(new Set(signers));
+    if (unique.length !== signers.length) {
+      throw new ValidationError("duplicate signer detected in panel", "signers");
+    }
+    for (const s of signers) {
+      assertValidStellarAddress(s, "signer address");
+    }
+    return this.client.resolve({
+      escrow_id: escrowId,
+      verdict: v,
+      signature: undefined,
+    });
+  }
+  resolveSigned(
+    escrowId: u64,
+    v: Verdict,
+    signature: Buffer | Uint8Array,
+  ): Promise<AssembledTransaction<Result<void>>> {
+    const sigBuf = Buffer.isBuffer(signature)
+      ? signature
+      : Buffer.from(signature);
+    if (sigBuf.length !== 64) {
+      throw new ValidationError(
+        "ed25519 signature must be exactly 64 bytes",
+        "signature",
+      );
+    }
+    return this.client.resolve({
+      escrow_id: escrowId,
+      verdict: v,
+      signature: sigBuf,
     });
   }
   cancel(
