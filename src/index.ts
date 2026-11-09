@@ -32,6 +32,13 @@ export {
 } from "./adjudicator.js";
 
 export {
+  UmbraVault,
+  type SellerAccountSummary,
+  type LockRecord,
+  type VaultOptions,
+} from "./vault.js";
+
+export {
   deployments,
   rpcUrls,
   type Deployment,
