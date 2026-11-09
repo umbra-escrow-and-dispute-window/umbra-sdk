@@ -8,6 +8,15 @@ export interface DecodedTransition {
   state: State;
 }
 
+/** Represents a decoded Astrolabe reputation attestation record event. */
+export interface DecodedAttestationRecord {
+  escrowId: bigint;
+  buyer: string;
+  seller: string;
+  outcome: State;
+  amountBucket: number;
+}
+
 /** Represents a Soroban RPC event or event-like object. */
 export interface SorobanEventLike {
   topic?: readonly (xdr.ScVal | string)[];
@@ -68,6 +77,52 @@ export function decodeTransition(
       kind,
       escrowId,
       state,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Decodes an Astrolabe terminal attestation record event.
+ * Topics: ["astrolabe", "record", escrow_id]
+ */
+export function decodeAttestationRecord(
+  event: SorobanEventLike,
+): DecodedAttestationRecord | null {
+  if (!event || !event.topic || event.topic.length < 3 || !event.value) {
+    return null;
+  }
+
+  try {
+    const t0 = parseScVal(event.topic[0]);
+    const t1 = parseScVal(event.topic[1]);
+    const t2 = parseScVal(event.topic[2]);
+
+    if (scValToNative(t0) !== "astrolabe" || scValToNative(t1) !== "record") {
+      return null;
+    }
+
+    const escrowIdNative = scValToNative(t2);
+    const escrowId =
+      typeof escrowIdNative === "bigint"
+        ? escrowIdNative
+        : BigInt(escrowIdNative);
+
+    const valScVal = parseScVal(event.value);
+    const nativeVal = scValToNative(valScVal) as {
+      buyer: string;
+      seller: string;
+      outcome: number | State;
+      amount_bucket: number;
+    };
+
+    return {
+      escrowId,
+      buyer: String(nativeVal.buyer),
+      seller: String(nativeVal.seller),
+      outcome: Number(nativeVal.outcome) as State,
+      amountBucket: Number(nativeVal.amount_bucket),
     };
   } catch {
     return null;

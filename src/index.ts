@@ -65,7 +65,9 @@ export { withRetry, type RetryOptions } from "./retry.js";
 export {
   decodeTransition,
   filterEscrowEvents,
+  decodeAttestationRecord,
   type DecodedTransition,
+  type DecodedAttestationRecord,
   type SorobanEventLike,
 } from "./events.js";
 

@@ -3,6 +3,7 @@ import { xdr } from "@stellar/stellar-sdk";
 import {
   decodeTransition,
   filterEscrowEvents,
+  decodeAttestationRecord,
   State,
   type SorobanEventLike,
 } from "../src/index.js";
@@ -104,5 +105,46 @@ describe("events decoding and filtering", () => {
     expect(results[0]?.kind).toBe("create");
     expect(results[1]?.kind).toBe("fund");
     expect(results.every((r) => r.escrowId === 10n)).toBe(true);
+  });
+
+  it("decodes Astrolabe terminal attestation records", () => {
+    const t0 = xdr.ScVal.scvSymbol("astrolabe");
+    const t1 = xdr.ScVal.scvSymbol("record");
+    const t2 = xdr.ScVal.scvU64(new xdr.Uint64(42n));
+
+    const mapVal = xdr.ScVal.scvMap([
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("buyer"),
+        val: xdr.ScVal.scvString("GBUYER"),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("seller"),
+        val: xdr.ScVal.scvString("GSELLER"),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("outcome"),
+        val: xdr.ScVal.scvU32(State.ResolvedBuyer),
+      }),
+      new xdr.ScMapEntry({
+        key: xdr.ScVal.scvSymbol("amount_bucket"),
+        val: xdr.ScVal.scvU32(2),
+      }),
+    ]);
+
+    const record = decodeAttestationRecord({
+      topic: [t0, t1, t2],
+      value: mapVal,
+    });
+
+    expect(record).not.toBeNull();
+    expect(record?.escrowId).toBe(42n);
+    expect(record?.buyer).toBe("GBUYER");
+    expect(record?.seller).toBe("GSELLER");
+    expect(record?.outcome).toBe(State.ResolvedBuyer);
+    expect(record?.amountBucket).toBe(2);
+
+    expect(
+      decodeAttestationRecord(null as unknown as SorobanEventLike),
+    ).toBeNull();
   });
 });
