@@ -25,6 +25,13 @@ export {
 } from "./hashing.js";
 
 export {
+  buildSignedVerdictPayload,
+  signVerdictPayload,
+  verifyVerdictSignature,
+  ADJUDICATOR_DOMAIN,
+} from "./adjudicator.js";
+
+export {
   deployments,
   rpcUrls,
   type Deployment,
