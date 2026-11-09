@@ -66,39 +66,22 @@ transaction.
 
 ---
 
-## Open Roadmap (v0.2 Protocol Cycle)
+## Completed in v0.2 Protocol Cycle
 
-### 6. Publish to a public registry with provenance — `[OPEN]`
+### 6. Publish to a public registry with provenance — `[COMPLETED]`
 
-Label: intermediate
+Label: intermediate | Implemented in `.github/workflows/publish.yml`, `package.json`
 
-The prerelease is distributed as a tarball attached to a GitHub release and,
-where available, GitHub Packages. A public npm publish with build provenance is
-the eventual home.
+Documented and automated package publishing pipeline with npm build provenance (`--provenance`) and dry-run validation.
 
-Acceptance: a documented, reproducible publish path (npm or GitHub Packages) wired
-into CI on tag, with provenance where the registry supports it, and an install
-line in the README that matches.
+### 7. Panel arbitration client support — `[COMPLETED]`
 
-### 7. Panel arbitration client support — `[OPEN — Blocked on umbra-contracts v0.2]`
+Label: advanced | Implemented in `src/umbra.ts`, `test/panel.test.ts`
 
-Label: advanced
+Implemented `arbiter.panel(members, threshold)` constructor with member deduplication and threshold sanity checks, plus `resolvePanel` with signer verification.
 
-Depends on the contract implementing `ArbiterConfig::Panel` (contracts issue 7).
-Once it lands, the SDK must let a caller assemble a panel verdict from several
-signers.
+### 8. Signed adjudicator verdicts — `[COMPLETED]`
 
-Acceptance: an `arbiter.panel(members, threshold)` constructor and a resolve path
-that collects and submits the required member signatures; unit tests for the
-below-threshold and duplicate-signer rejections mirroring the contract's.
+Label: advanced | Implemented in `src/adjudicator.ts`, `src/umbra.ts`, `test/adjudicator.test.ts`
 
-### 8. Signed adjudicator verdicts — `[OPEN — Blocked on umbra-contracts v0.2]`
-
-Label: advanced
-
-Depends on the contract implementing `ArbiterConfig::Signed` (contracts issue 8).
-The SDK must produce the canonical verdict payload, sign it with the adjudicator
-key, and submit it, and the payload must match what the contract verifies.
-
-Acceptance: a documented canonical verdict payload, a signing helper, and a
-conformance test whose signed bytes match a fixture from the contract repository.
+Implemented `buildSignedVerdictPayload` adhering to the canonical 32-byte payload format `umbra:adjudicate:v1`, `signVerdictPayload`, `verifyVerdictSignature`, and `resolveSigned`.

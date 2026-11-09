@@ -95,15 +95,26 @@ export function decodeAttestationRecord(
   }
 
   try {
-    const t0 = parseScVal(event.topic[0]);
-    const t1 = parseScVal(event.topic[1]);
-    const t2 = parseScVal(event.topic[2]);
+    const t0 = event.topic[0];
+    const t1 = event.topic[1];
+    const t2 = event.topic[2];
 
-    if (scValToNative(t0) !== "astrolabe" || scValToNative(t1) !== "record") {
+    if (!t0 || !t1 || !t2) {
       return null;
     }
 
-    const escrowIdNative = scValToNative(t2);
+    const t0Val = parseScVal(t0);
+    const t1Val = parseScVal(t1);
+    const t2Val = parseScVal(t2);
+
+    if (
+      scValToNative(t0Val) !== "astrolabe" ||
+      scValToNative(t1Val) !== "record"
+    ) {
+      return null;
+    }
+
+    const escrowIdNative = scValToNative(t2Val);
     const escrowId =
       typeof escrowIdNative === "bigint"
         ? escrowIdNative

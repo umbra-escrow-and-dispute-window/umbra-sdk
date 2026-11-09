@@ -1,6 +1,6 @@
 {
   "name": "@umbra-escrow-and-dispute-window/umbra-sdk",
-  "version": "0.1.0-rc.1",
+  "version": "0.2.0",
   "description": "TypeScript client and off-chain hashing conventions for the Umbra escrow and dispute-window protocol on Stellar",
   "license": "Apache-2.0",
   "type": "module",

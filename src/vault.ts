@@ -1,8 +1,3 @@
-import type {
-  AssembledTransaction,
-  Result,
-  u64,
-} from "@stellar/stellar-sdk/contract";
 import { deployments, rpcUrls, type NetworkName } from "./deployments.js";
 import { SignerRequiredError } from "./errors.js";
 import {
@@ -41,7 +36,7 @@ export class UmbraVault {
   constructor(options: VaultOptions = {}) {
     const network = options.network ?? "testnet";
     this.contractId =
-      options.contractId ?? deployments[network]?.escrowContractId ?? "";
+      options.contractId ?? deployments.contracts.escrow ?? "";
     this.rpcUrl = options.rpcUrl ?? rpcUrls[network];
     this.options = { ...options, network };
   }
